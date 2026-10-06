@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Wellness Toolkit</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500&family=Manrope:wght@400;600&display=swap">
+<style>
+:root{--bg:#eef5f7;--ink:#12303d;--mute:#5d7a86;--orb:#3aa8bd;--orb2:#a9e0ea;--hold:#c9822b;--card:#ffffff;--line:#cfe0e6;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1c26;--ink:#e3f2f6;--mute:#8aa9b5;--orb:#4fc3d8;--orb2:#16505e;--hold:#f2b46b;--card:#12303d;--line:#1f4352}}
+:root[data-theme="dark"]{--bg:#0b1c26;--ink:#e3f2f6;--mute:#8aa9b5;--orb:#4fc3d8;--orb2:#16505e;--hold:#f2b46b;--card:#12303d;--line:#1f4352}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Manrope,system-ui,sans-serif;min-height:100vh}
+.app{max-width:440px;margin:0 auto;padding:20px 20px 40px;display:flex;flex-direction:column;gap:20px;min-height:100vh}
+h1{font:300 28px/1.1 Fraunces,Georgia,serif;margin:8px 0 0}
+p{margin:0;color:var(--mute);line-height:1.5;font-size:14px}
+.stage{display:flex;flex-direction:column;align-items:center;gap:18px;padding:12px 0}
+.orbwrap{width:min(78vw,300px);aspect-ratio:1;display:grid;place-items:center}
+.orb{width:62%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--orb2),var(--orb));display:grid;place-items:center;transition:transform var(--d,1.7s) ease-in-out;box-shadow:0 0 0 1px var(--line)}
+.orb.hold{background:radial-gradient(circle at 35% 30%,var(--bg),var(--hold));transition:transform .6s ease}
+.big{font:300 64px/1 Fraunces,Georgia,serif;color:#fff;font-variant-numeric:tabular-nums}
+.orb.hold .big{color:var(--ink)}
+.label{font:500 20px/1.2 Fraunces,Georgia,serif;text-align:center}
+.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+button{font:600 15px Manrope,sans-serif;border:0;border-radius:999px;padding:14px 26px;background:var(--ink);color:var(--bg);cursor:pointer}
+button.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--orb);outline-offset:2px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:14px}
+.set{display:flex;justify-content:space-between;align-items:center;font-size:14px}
+.set input[type=range]{width:55%;accent-color:var(--orb)}
+.hist{display:flex;justify-content:space-between;font-size:14px;border-top:1px solid var(--line);padding-top:10px}
+.hist b{font-weight:600;font-variant-numeric:tabular-nums}
+.warn{font-size:12px;color:var(--mute);line-height:1.5}
+.times{display:flex;gap:18px;justify-content:center}
+.times div{text-align:center}.times span{display:block;font:300 28px Fraunces,serif;font-variant-numeric:tabular-nums}
+.tab.on{background:var(--ink);color:var(--bg)}
+.tab{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1px var(--line);padding:9px 14px;font-size:14px}
+.tab.on{box-shadow:none}
+.ring{position:relative;width:min(78vw,280px)}
+.ring svg{width:100%;display:block}
+.ringtxt{position:absolute;inset:0;display:grid;place-items:center;font:300 56px Fraunces,Georgia,serif;font-variant-numeric:tabular-nums}
+.ring .stick{position:absolute;left:21%;top:9%;width:58%}
+.ring.ex .ringtxt{place-items:end center;padding-bottom:15%;font-size:34px}
+.num,.txt{width:100%;padding:9px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:600 15px Manrope,sans-serif;text-align:center}
+.txt{text-align:left;font-weight:400}
+.srow{display:grid;grid-template-columns:24px 1fr 1fr 38px 22px;gap:8px;align-items:center;font-size:14px}
+.srow.hd{color:var(--mute);font-size:12px}
+.chk{width:36px;height:36px;border-radius:50%;padding:0;background:transparent;color:var(--mute);box-shadow:inset 0 0 0 1px var(--line);font-size:16px}
+.chk.on{background:var(--orb);color:#fff;box-shadow:none}
+.x{background:none;color:var(--mute);padding:0 4px;font-size:22px;line-height:1;border-radius:6px}
+.restbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:2;display:flex;justify-content:space-between;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;font:500 18px Fraunces,Georgia,serif;font-variant-numeric:tabular-nums}
+.hrow{display:flex;justify-content:space-between;width:100%;background:none;color:var(--ink);border-radius:0;border-top:1px solid var(--line);padding:12px 0;font:600 14px Manrope,sans-serif;text-align:left}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;width:100%}
+.bar>div{height:100%;background:var(--orb);transition:width .3s linear}
+.ta{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:400 15px/1.4 Manrope,sans-serif;resize:none}
+textarea:focus-visible{outline:3px solid var(--orb);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.orb{transition:none}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script type="text/babel">
+const {useState,useEffect,useRef}=React;
+const load=()=>{try{return JSON.parse(localStorage.getItem('bw_hist')||'[]')}catch(e){return[]}};
+const save=h=>{try{localStorage.setItem('bw_hist',JSON.stringify(h))}catch(e){}};
+const fmt=s=>Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
+const PREF=(k,d)=>{try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}};
+const SAVE=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+let AC=null,WAVES=PREF('bw_waves',true),VOICE=PREF('bw_voice',true),WAVE=null;
+const initAudio=()=>{try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume()}catch(e){}};
+const noiseBuf=()=>{const b=AC.createBuffer(1,AC.sampleRate*4,AC.sampleRate),d=b.getChannelData(0);let l=0;for(let i=0;i<d.length;i++){l=(l+0.02*(Math.random()*2-1))/1.02;d[i]=l*3.5}return b};
+const startWave=()=>{if(!AC||!WAVES||WAVE)return;try{const s=AC.createBufferSource(),f=AC.createBiquadFilter(),g=AC.createGain();s.buffer=noiseBuf();s.loop=true;f.type='lowpass';f.frequency.value=250;g.gain.value=0.0001;s.connect(f);f.connect(g);g.connect(AC.destination);s.start();WAVE={s,f,g}}catch(e){}};
+const stopWave=()=>{if(!WAVE)return;try{WAVE.g.gain.setTargetAtTime(0.0001,AC.currentTime,0.3);WAVE.s.stop(AC.currentTime+1.5)}catch(e){}WAVE=null};
+const wave=(level,d)=>{if(!WAVE)return;try{const n=AC.currentTime,k=d*0.4;WAVE.g.gain.cancelScheduledValues(n);WAVE.f.frequency.cancelScheduledValues(n);WAVE.g.gain.setTargetAtTime(0.02+level*0.5,n,k);WAVE.f.frequency.setTargetAtTime(250+level*1200,n,k)}catch(e){}};
+let VOICES=[],UT=null;
+const VOICE_OK=typeof window!=='undefined'&&'speechSynthesis' in window&&typeof SpeechSynthesisUtterance!=='undefined';
+const loadVoices=()=>{try{VOICES=speechSynthesis.getVoices()||[]}catch(e){}};
+if(VOICE_OK){loadVoices();try{speechSynthesis.addEventListener('voiceschanged',loadVoices)}catch(e){}}
+const say=(t,force)=>{
+  if(!VOICE_OK||!(VOICE||force))return;
+  try{
+    const ss=window.speechSynthesis;
+    const busy=ss.speaking||ss.pending;
+    if(busy)ss.cancel();
+    const u=new SpeechSynthesisUtterance(t);
+    const v=VOICES.find(x=>/^en/i.test(x.lang)&&x.localService)||VOICES.find(x=>/^en/i.test(x.lang));
+    if(v){u.voice=v;u.lang=v.lang}else u.lang='en-GB';
+    u.rate=0.9;u.volume=1;UT=u;
+    setTimeout(()=>{try{ss.resume();ss.speak(u)}catch(e){}},busy?100:0);
+  }catch(e){}
+};
+const testVoice=()=>{initAudio();if(!VOICE_OK){alert("This browser can't play voice guidance. Try opening the page in Safari or Chrome.");return}say('Voice is working. Breathe in, and let go.',true)};
+const stopAll=()=>{stopWave();try{speechSynthesis.cancel()}catch(e){}};
+
+const loadCold=()=>{try{return JSON.parse(localStorage.getItem('bw_cold_log')||'[]')}catch(e){return[]}};
+function Cold({onBusy}){
+  const [dur,setDur]=useState(()=>{try{return +localStorage.getItem('bw_cold')||120}catch(e){return 120}});
+  const [st,setSt]=useState('idle');
+  const [left,setLeft]=useState(0);
+  const [voice,setVoice]=useState(VOICE);
+  const [log,setLog]=useState(loadCold);
+  const startRef=useRef(0);
+  useEffect(()=>{onBusy&&onBusy(st==='ready'||st==='run');return()=>onBusy&&onBusy(false)},[st]);
+  const change=e=>{const v=+e.target.value;setDur(v);try{localStorage.setItem('bw_cold',v)}catch(x){}};
+  const toggleVoice=e=>{VOICE=e.target.checked;SAVE('bw_voice',VOICE);setVoice(VOICE)};
+  const start=()=>{say('Ten seconds. Turn the water to cold.');setSt('ready')};
+  const stop=()=>{try{speechSynthesis.cancel()}catch(x){}setSt('idle')};
+  const finish=(elapsed,msg)=>{
+    if(elapsed>=10){const l=[{d:Date.now(),s:Math.round(elapsed)},...log].slice(0,50);setLog(l);try{localStorage.setItem('bw_cold_log',JSON.stringify(l))}catch(x){}}
+    if(msg)say(msg);setSt('done');
+  };
+  useEffect(()=>{
+    if(st!=='ready')return;
+    const end=Date.now()+10000;setLeft(10);
+    const id=setInterval(()=>{const l=(end-Date.now())/1000;setLeft(Math.max(0,l));if(l<=0){clearInterval(id);say('Go. Breathe slow and steady.');setSt('run')}},200);
+    return()=>clearInterval(id);
+  },[st]);
+  useEffect(()=>{
+    if(st!=='run')return;
+    const t0=Date.now(),end=t0+dur*1000,said={};
+    startRef.current=t0;setLeft(dur);
+    const id=setInterval(()=>{
+      const l=(end-Date.now())/1000;setLeft(Math.max(0,l));
+      if(!said.h&&dur>=40&&l<=dur/2){said.h=1;say('Halfway')}
+      if(!said.t&&dur>=90&&l<=30){said.t=1;say('Thirty seconds')}
+      if(!said.n&&dur>=30&&l<=10){said.n=1;say('Ten seconds')}
+      if(l<=0){clearInterval(id);finish(dur,'Done. Well done. Get warm, and take a few easy breaths.')}
+    },200);
+    return()=>clearInterval(id);
+  },[st]);
+
+  const total=st==='ready'?10:dur;
+  const frac=total?Math.min(1,left/total):0;
+  const longest=log.length?Math.max(...log.map(x=>x.s)):0;
+  const last=log[0];
+  return (<>
+    {st==='idle'&&(<>
+      <div className="card">
+        <label className="set">Duration: {fmt(dur)}<input type="range" min="15" max="300" step="5" value={dur} onChange={change}/></label>
+        <label className="set">Voice guidance<input type="checkbox" checked={voice} onChange={toggleVoice}/></label>
+        <div className="set"><span>Not hearing it? Check your media volume.</span><button className="ghost" style={{padding:'8px 16px'}} onClick={testVoice}>Test voice</button></div>
+      </div>
+      <div className="row"><button onClick={start}>Start cold shower</button></div>
+      <p className="warn">You get 10 seconds to turn the water cold before the timer starts. Cold water raises heart rate and blood pressure. Build up gradually, get out if you feel unwell, and check with a doctor first if you have a heart condition or are pregnant.</p>
+      <div className="card">
+        <div className="set"><span>Cold showers logged</span><b>{log.length}</b></div>
+        <div className="set"><span>Longest</span><b>{longest?fmt(longest):'None yet'}</b></div>
+        {log.slice(0,3).map((x,i)=>(<div className="hist" key={i}><span>{new Date(x.d).toLocaleDateString()}</span><b>{fmt(x.s)}</b></div>))}
+      </div>
+    </>)}
+    {(st==='ready'||st==='run')&&(
+      <div className="stage" aria-live="polite">
+        <div className="ring">
+          <svg viewBox="0 0 260 260" aria-hidden="true">
+            <circle cx="130" cy="130" r="112" fill="none" stroke="var(--line)" strokeWidth="10"/>
+            <circle cx="130" cy="130" r="112" fill="none" stroke={st==='ready'?'var(--hold)':'var(--orb)'} strokeWidth="10" strokeLinecap="round" strokeDasharray="703.7" strokeDashoffset={703.7*(1-frac)} transform="rotate(-90 130 130)"/>
+          </svg>
+          <div className="ringtxt">{st==='ready'?Math.ceil(left):fmt(Math.ceil(left))}</div>
+        </div>
+        <div className="label">{st==='ready'?'Turn the water cold':'Breathe slow and steady'}</div>
+        <div className="row">
+          {st==='run'?<button onClick={()=>finish((Date.now()-startRef.current)/1000,'')}>End early</button>:<button className="ghost" onClick={stop}>Cancel</button>}
+        </div>
+      </div>
+    )}
+    {st==='done'&&(
+      <div className="stage">
+        <div className="label">Cold shower complete</div>
+        {last&&<div className="times"><div><span>{fmt(last.s)}</span><p>Time in the cold</p></div></div>}
+        <div className="row"><button onClick={start}>Go again</button><button className="ghost" onClick={()=>setSt('idle')}>Back to start</button></div>
+      </div>
+    )}
+  </>);
+}
+
+const EX={
+ cardio:[['Skipping','Jump rope, or mime it'],['High knees','Drive knees to hip height'],['Jumping jacks','Stay light on your feet'],['Burpees','Chest to floor, then jump'],['Mountain climbers','Hips low, drive knees fast'],['Skater jumps','Leap side to side'],['Squat jumps','Land softly, sit back'],['Heel flicks','Kick heels to glutes']],
+ core:[['Plank','Straight line, brace your abs'],['Bicycle crunches','Elbow to opposite knee'],['Dead bugs','Back flat, opposite arm and leg'],['Leg raises','Lower slowly, back flat'],['Russian twists','Lean back, rotate side to side'],['Flutter kicks','Small, fast, low kicks'],['Shoulder taps','From plank, tap opposite shoulder'],['V-ups','Reach hands to toes']],
+ kb:[['Kettlebell swings','Hinge at the hips, snap up'],['Goblet squats','Hold at chest, elbows inside knees'],['Kettlebell deadlifts','Flat back, push the floor away'],['Overhead press','Switch arms halfway'],['Bent-over rows','Switch arms halfway'],['Halos','Circle your head, switch direction halfway'],['Reverse lunges','Hold at chest, switch legs halfway'],['Clean and press','Switch arms halfway']]
+};
+const EXN={off:'None',cardio:'Cardio',core:'Core',kb:'Strength',all:'All'};
+const ORDN={blocks:'By type',alt:'Alternate',rand:'Random'};
+const ALLDESC={blocks:'All cardio, then all strength, then all core. 24 exercises, one per round.',alt:'Rotates cardio, strength and core. 24 exercises, one per round.',rand:'All 24 exercises in a random order, one per round.'};
+const ALLEX=['cardio','kb','core'].flatMap(c=>EX[c]);
+const shuf=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b};
+const pick=(k,n,ord)=>{
+  if(k==='off')return null;
+  let L=EX[k];
+  if(k==='all')L=ord==='alt'?[0,1,2,3,4,5,6,7].flatMap(i=>['cardio','kb','core'].map(c=>EX[c][i])):ord==='rand'?shuf(ALLEX):ALLEX;
+  return Array.from({length:n},(_,i)=>L[i%L.length]);
+};
+const loadHiit=()=>{try{return JSON.parse(localStorage.getItem('bw_hiit_log')||'[]')}catch(e){return[]}};
+const loadHcfg=()=>{const d={work:30,rest:15,rounds:8,ex:'off',ord:'blocks'};try{const c={...d,...JSON.parse(localStorage.getItem('bw_hiit')||'{}')};if(c.ex==='mix'){c.ex='all';c.ord='alt'}return c}catch(e){return d}};
+const ANIM={
+'Skipping':[.25,0,[50,0,5,70,0,60,2,2,-2,-2,0],[50,0,5,100,0,90,0,-25,0,-20,8]],
+'High knees':[.3,0,[50,5,-40,-15,40,110,85,5,0,0,0],[50,5,40,110,-40,-15,0,0,85,5,0]],
+'Jumping jacks':[.4,0,[50,0,-10,-10,10,10,-3,-3,3,3,0],[50,0,-155,-165,155,165,-22,-22,22,22,4]],
+'Burpees':[.5,0,[50,0,170,175,-170,-175,0,-10,0,-10,8],[44,60,5,5,10,10,80,-15,75,-15,0],[52,66,0,0,0,0,-66,-66,-66,-66,0]],
+'Mountain climbers':[.25,0,[52,66,0,0,0,0,60,-10,-66,-66,0],[52,66,0,0,0,0,-66,-66,60,-10,0]],
+'Skater jumps':[.45,0,[40,-22,40,35,30,25,-15,10,35,20,2],[60,22,-40,-35,-30,-25,-35,-20,15,-10,2]],
+'Squat jumps':[.6,0,[45,25,-50,-50,-45,-45,80,-15,78,-15,0],[50,0,170,170,160,160,0,-5,0,-5,10]],
+'Heel flicks':[.3,0,[50,3,40,110,-40,-10,10,-140,0,0,0],[50,3,-40,-10,40,110,0,0,10,-140,0]],
+'Plank':[1.5,0,[52,78,0,90,0,90,-78,-78,-78,-78,0],[52,74,0,90,0,90,-74,-74,-74,-74,0]],
+'Bicycle crunches':[.6,0,[48,-75,-170,-100,-170,-100,130,75,90,90,0],[48,-75,-170,-100,-170,-100,90,90,130,75,0]],
+'Dead bugs':[1,0,[56,-90,180,180,-90,-90,180,90,90,90,0],[56,-90,-90,-90,180,180,90,90,180,90,0]],
+'Leg raises':[.9,0,[46,-90,90,90,92,92,90,90,93,93,0],[46,-90,90,90,92,92,180,180,175,175,0]],
+'Russian twists':[.5,0,[46,-35,40,40,35,35,110,70,115,75,0],[46,-35,130,130,125,125,110,70,115,75,0]],
+'Flutter kicks':[.25,0,[46,-80,90,90,92,92,120,120,92,92,0],[46,-80,90,90,92,92,92,92,120,120,0]],
+'Shoulder taps':[.5,0,[52,66,-20,-170,0,0,-66,-66,-66,-66,0],[52,66,0,0,-20,-170,-66,-66,-66,-66,0]],
+'V-ups':[.9,0,[58,-90,-90,-90,-92,-92,90,90,92,92,0],[46,-35,110,110,112,112,125,125,128,128,0]],
+'Kettlebell swings':[.7,'m',[46,55,-55,-55,-55,-55,25,-15,25,-15,0],[50,0,90,90,88,88,2,2,-2,-2,0]],
+'Goblet squats':[1,'m',[50,0,20,160,18,158,3,3,-3,-3,0],[44,25,20,160,18,158,80,-15,78,-15,0]],
+'Kettlebell deadlifts':[1,'m',[44,70,-35,-35,-37,-37,70,-20,68,-20,0],[50,0,5,5,3,3,2,2,-2,-2,0]],
+'Overhead press':[.9,'a',[50,0,10,170,-10,-10,3,3,-3,-3,0],[50,0,176,178,-10,-10,3,3,-3,-3,0]],
+'Bent-over rows':[.8,'a',[44,60,0,0,-5,-5,20,-10,20,-10,0],[44,60,-110,5,-5,-5,20,-10,20,-10,0]],
+'Halos':[.7,'m',[50,0,40,150,38,148,2,2,-2,-2,0],[50,0,-60,-170,-58,-168,2,2,-2,-2,0]],
+'Reverse lunges':[.9,'m',[50,0,20,160,18,158,3,3,-3,-3,0],[53,5,20,160,18,158,80,0,-30,-75,0]],
+'Clean and press':[.7,'a',[46,45,-45,-45,-10,-10,25,-15,25,-15,0],[50,0,10,170,-10,-10,3,3,-3,-3,0],[50,0,176,178,-10,-10,3,3,-3,-3,0]]
+};
+const rd=Math.PI/180;
+const lerp=(a,b,e)=>a+(b-a)*e;
+const lerpA=(a,b,e)=>a+(((b-a+540)%360)-180)*e;
+const V=(a,l)=>[Math.sin(a*rd)*l,Math.cos(a*rd)*l];
+const add=(p,q)=>[p[0]+q[0],p[1]+q[1]];
+function frame(p,kb){
+  const [hx,t,a1,a2,b1,b2,c1,c2,d1,d2,j,hh]=p;
+  const H=[hx,0],tv=[Math.sin(t*rd),-Math.cos(t*rd)];
+  const hr=(hh==null?t:hh)*rd,hv=[Math.sin(hr),-Math.cos(hr)];
+  const S=[hx+tv[0]*24,tv[1]*24],hd=[S[0]+hv[0]*9,S[1]+hv[1]*9];
+  const arm=(x,y)=>{const e=add(S,V(x,11));return [S,e,add(e,V(y,11))]};
+  const leg=(x,y)=>{const k=add(H,V(x,15));return [H,k,add(k,V(y,15))]};
+  const A=arm(a1,a2),B=arm(b1,b2),C=leg(c1,c2),D=leg(d1,d2);
+  const dy=90-Math.max(A[2][1],B[2][1],C[2][1],D[2][1],H[1],S[1],hd[1]+4)-j;
+  const P=q=>q[0].toFixed(1)+','+(q[1]+dy).toFixed(1);
+  const pl=(arr,c)=>'<polyline points="'+arr.map(P).join(' ')+'" style="stroke:var('+c+')"/>';
+  let k='';
+  if(kb){
+    const h=kb==='m'?[(A[2][0]+B[2][0])/2,(A[2][1]+B[2][1])/2]:A[2];
+    const x=h[0].toFixed(1),y=h[1]+dy;
+    k='<circle cx="'+x+'" cy="'+(y+3.5).toFixed(1)+'" r="4.5" style="fill:var(--hold);stroke:none"/><path d="M'+(x-2.8)+','+(y+1).toFixed(1)+' a2.8,2.8 0 0 1 5.6,0" style="stroke:var(--hold);stroke-width:1.6"/>';
+  }
+  return '<line x1="8" y1="90" x2="92" y2="90" style="stroke:var(--line);stroke-width:1.5"/>'+pl(D,'--mute')+pl(B,'--mute')+pl([H,S],'--ink')+pl(C,'--ink')+pl(A,'--ink')
+    +'<circle cx="'+hd[0].toFixed(1)+'" cy="'+(hd[1]+dy).toFixed(1)+'" r="5" style="fill:var(--bg);stroke:var(--ink)"/>'+k;
+}
+function Stick({name,dim,paused,flip}){
+  const ref=useRef(null);
+  useEffect(()=>{
+    const a=ANIM[name]||YANIM[name];if(!a||!ref.current)return;
+    const [half,kb,...R]=a,P=R.map(q=>q.length>11?q:[...q,q[1]]),n=P.length,m=2*(n-1);
+    const draw=now=>{
+      let k=((now/1000)/half)%m;if(k>n-1)k=m-k;
+      const i=Math.min(Math.floor(k),n-2),f=k-i,e=(1-Math.cos(f*Math.PI))/2;
+      const p=P[i].map((v,j)=>j===0||j===10?lerp(v,P[i+1][j],e):lerpA(v,P[i+1][j],e));
+      ref.current.innerHTML=frame(p,kb);
+    };
+    draw(0);
+    if(paused||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+    let raf;const loop=now=>{draw(now);raf=requestAnimationFrame(loop)};
+    raf=requestAnimationFrame(loop);
+    return()=>cancelAnimationFrame(raf);
+  },[name,paused]);
+  return <svg viewBox="0 0 100 100" role="img" aria-label={name+' demonstration'} style={{opacity:dim?0.55:1,transform:flip?'scaleX(-1)':'none'}}><g ref={ref} fill="none" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+}
+
+function Hiit({onBusy}){
+  const [cfg,setCfg]=useState(loadHcfg);
+  const [st,setSt]=useState('idle');
+  const [idx,setIdx]=useState(0);
+  const [left,setLeft]=useState(0);
+  const [paused,setPaused]=useState(false);
+  const [voice,setVoice]=useState(VOICE);
+  const [log,setLog]=useState(loadHiit);
+  const segsRef=useRef([]),remRef=useRef(null),leftRef=useRef(0);
+  useEffect(()=>{onBusy(st==='run');return()=>onBusy(false)},[st]);
+  const set=k=>e=>{const c={...cfg,[k]:+e.target.value};setCfg(c);try{localStorage.setItem('bw_hiit',JSON.stringify(c))}catch(x){}};
+  const toggleVoice=e=>{VOICE=e.target.checked;SAVE('bw_voice',VOICE);setVoice(VOICE)};
+  const saveC=c=>{setCfg(c);try{localStorage.setItem('bw_hiit',JSON.stringify(c))}catch(x){}};
+  const setEx=k=>{const c={...cfg,ex:k};if(k==='all'&&cfg.ex!=='all'){c.pr=cfg.rounds;c.rounds=24}else if(k!=='all'&&cfg.ex==='all'&&cfg.pr){c.rounds=cfg.pr}saveC(c)};
+  const setOrd=k=>saveC({...cfg,ord:k});
+  const total=cfg.rounds*cfg.work+(cfg.rounds-1)*cfg.rest+10;
+  const start=()=>{
+    const exs=pick(cfg.ex,cfg.rounds,cfg.ord);
+    const a=[{t:'ready',s:10,ne:exs&&exs[0]}];
+    for(let i=1;i<=cfg.rounds;i++){a.push({t:'work',s:cfg.work,i,e:exs&&exs[i-1]});if(i<cfg.rounds)a.push({t:'rest',s:cfg.rest,i,ne:exs&&exs[i]})}
+    segsRef.current=a;remRef.current=null;setPaused(false);setIdx(0);setSt('run');
+  };
+  const finish=done=>{
+    if(done){const l=[{d:Date.now(),w:cfg.work,r:cfg.rest,n:cfg.rounds},...log].slice(0,50);setLog(l);try{localStorage.setItem('bw_hiit_log',JSON.stringify(l))}catch(x){}say('Workout complete. Well done.')}
+    else{try{speechSynthesis.cancel()}catch(x){}}
+    setPaused(false);setSt(done?'done':'idle');
+  };
+  const pause=()=>{remRef.current=leftRef.current;try{speechSynthesis.cancel()}catch(x){}setPaused(true)};
+  useEffect(()=>{
+    if(st!=='run'||paused)return;
+    const seg=segsRef.current[idx];
+    const resumed=remRef.current!=null;
+    const d0=resumed?remRef.current:seg.s;remRef.current=null;
+    if(!resumed)say(seg.t==='ready'?'Get ready.'+(seg.ne?' First up: '+seg.ne[0]:''):seg.t==='rest'?'Rest.'+(seg.ne?' Next: '+seg.ne[0]:''):(seg.i===cfg.rounds&&cfg.rounds>1?'Last round. ':seg.i===1?'Round 1. ':'')+(seg.e?seg.e[0]+'. ':'')+'Go');
+    const end=Date.now()+d0*1000;
+    let said=d0<=3.5;
+    setLeft(d0);leftRef.current=d0;
+    const id=setInterval(()=>{
+      const l=(end-Date.now())/1000;setLeft(Math.max(0,l));leftRef.current=l;
+      if(!said&&seg.s>=6&&l<=3){said=true;say('Three, two, one')}
+      if(l<=0){clearInterval(id);const nx=idx+1;if(nx<segsRef.current.length)setIdx(nx);else finish(true)}
+    },200);
+    return()=>clearInterval(id);
+  },[st,idx,paused]);
+
+  const seg=segsRef.current[idx]||{t:'ready',s:10};
+  const nxt=segsRef.current[idx+1];
+  const frac=seg.s?Math.min(1,left/seg.s):0;
+  const col=seg.t==='work'?'var(--hold)':seg.t==='rest'?'var(--orb)':'var(--mute)';
+  const name=t=>t==='work'?'Work':t==='rest'?'Rest':'Get ready';
+  const nm=x=>x.t==='work'&&x.e?x.e[0]:name(x.t);
+  const sx=seg.t==='work'?seg.e:seg.ne;
+  return (<>
+    {st==='idle'&&(<>
+      <div className="card">
+        <label className="set">Work: {fmt(cfg.work)}<input type="range" min="10" max="120" step="5" value={cfg.work} onChange={set('work')}/></label>
+        <label className="set">Rest: {fmt(cfg.rest)}<input type="range" min="5" max="120" step="5" value={cfg.rest} onChange={set('rest')}/></label>
+        <label className="set">Rounds: {cfg.rounds}<input type="range" min="2" max="24" value={cfg.rounds} onChange={set('rounds')}/></label>
+        <div className="set"><span>Exercises</span></div>
+        <div className="row">{Object.keys(EXN).map(k=>(<button key={k} className={'tab'+(cfg.ex===k?' on':'')} style={{padding:'8px 14px'}} onClick={()=>setEx(k)}>{EXN[k]}</button>))}</div>
+        {cfg.ex==='all'&&<div className="row">{Object.keys(ORDN).map(k=>(<button key={k} className={'tab'+((cfg.ord||'blocks')===k?' on':'')} style={{padding:'8px 14px'}} onClick={()=>setOrd(k)}>{ORDN[k]}</button>))}</div>}
+        {cfg.ex!=='off'&&<p>{cfg.ex==='all'?ALLDESC[cfg.ord||'blocks']+' Needs one kettlebell.':EX[cfg.ex].map(x=>x[0]).join(', ')+'.'+(cfg.ex==='kb'?' Needs one kettlebell.':'')}</p>}
+        <p>Total {fmt(total)}, including a 10 second countdown.</p>
+        <label className="set">Voice guidance<input type="checkbox" checked={voice} onChange={toggleVoice}/></label>
+        <div className="set"><span>Not hearing it? Check your media volume.</span><button className="ghost" style={{padding:'8px 16px'}} onClick={testVoice}>Test voice</button></div>
+      </div>
+      <div className="row"><button onClick={start}>Start workout</button></div>
+      <p className="warn">High-intensity exercise isn't right for everyone. Warm up first, stop if you feel pain, dizziness or chest tightness, and check with a doctor if you have a heart condition or haven't exercised in a while.</p>
+      <div className="card">
+        <div className="set"><span>Workouts logged</span><b>{log.length}</b></div>
+        {log.slice(0,3).map((x,i)=>(<div className="hist" key={i}><span>{new Date(x.d).toLocaleDateString()}</span><b>{x.n} × {fmt(x.w)} / {fmt(x.r)}</b></div>))}
+      </div>
+    </>)}
+    {st==='run'&&(
+      <div className="stage" aria-live="polite">
+        <p>{seg.t==='ready'?cfg.rounds+' rounds':'Round '+seg.i+' of '+cfg.rounds}</p>
+        <div className={'ring'+(sx?' ex':'')}>
+          <svg viewBox="0 0 260 260" aria-hidden="true">
+            <circle cx="130" cy="130" r="112" fill="none" stroke="var(--line)" strokeWidth="10"/>
+            <circle cx="130" cy="130" r="112" fill="none" stroke={col} strokeWidth="10" strokeLinecap="round" strokeDasharray="703.7" strokeDashoffset={703.7*(1-frac)} transform="rotate(-90 130 130)"/>
+          </svg>
+          {sx&&<div className="stick"><Stick name={sx[0]} dim={seg.t!=='work'} paused={paused}/></div>}
+          <div className="ringtxt">{left<60?Math.ceil(left):fmt(Math.ceil(left))}</div>
+        </div>
+        <div className="label">{paused?'Paused':nm(seg)}</div>
+        {seg.t==='work'&&seg.e&&<p>{seg.e[1]}</p>}
+        <p>{nxt?'Next: '+nm(nxt)+' '+fmt(nxt.s):'Last interval'}</p>
+        <div className="row">
+          {paused?<button onClick={()=>setPaused(false)}>Resume</button>:<button onClick={pause}>Pause</button>}
+          <button className="ghost" onClick={()=>finish(false)}>End workout</button>
+        </div>
+      </div>
+    )}
+    {st==='done'&&(
+      <div className="stage">
+        <div className="label">Workout complete</div>
+        <div className="times"><div><span>{cfg.rounds}</span><p>Rounds</p></div><div><span>{fmt(total)}</span><p>Total time</p></div></div>
+        <div className="row"><button onClick={start}>Go again</button><button className="ghost" onClick={()=>setSt('idle')}>Back to start</button></div>
+      </div>
+    )}
+  </>);
+}
+
+const SPLITS=[
+ ['Push / Pull / Legs',['Push','Pull','Legs']],
+ ['Upper / Lower',['Upper','Lower']],
+ ['Body-part combos',['Chest & Back','Legs & Shoulders','Chest & Triceps','Back & Biceps','Shoulders & Arms','Arms']],
+ ['Full body',['Full body']]
+];
+const WEX={
+ 'Push':['Bench press','Overhead press','Incline dumbbell press','Lateral raises','Triceps pushdown','Dips'],
+ 'Pull':['Deadlift','Pull-ups','Barbell row','Lat pulldown','Face pulls','Biceps curl'],
+ 'Legs':['Squat','Romanian deadlift','Leg press','Walking lunges','Leg curl','Calf raises'],
+ 'Upper':['Bench press','Barbell row','Overhead press','Lat pulldown','Biceps curl','Triceps pushdown'],
+ 'Lower':['Squat','Romanian deadlift','Leg press','Leg curl','Hip thrust','Calf raises'],
+ 'Chest & Back':['Bench press','Incline dumbbell press','Cable fly','Barbell row','Lat pulldown','Seated cable row'],
+ 'Legs & Shoulders':['Squat','Romanian deadlift','Leg press','Overhead press','Lateral raises','Rear delt fly'],
+ 'Chest & Triceps':['Bench press','Incline dumbbell press','Cable fly','Dips','Triceps pushdown','Skull crushers'],
+ 'Back & Biceps':['Deadlift','Pull-ups','Barbell row','Seated cable row','Barbell curl','Hammer curl'],
+ 'Shoulders & Arms':['Overhead press','Lateral raises','Rear delt fly','Barbell curl','Triceps pushdown','Hammer curl'],
+ 'Arms':['Barbell curl','Hammer curl','Preacher curl','Triceps pushdown','Skull crushers','Overhead triceps extension'],
+ 'Full body':['Squat','Bench press','Barbell row','Overhead press','Romanian deadlift','Pull-ups']
+};
+const lastFor=(log,n)=>{for(const s of log){const e=s.ex.find(x=>x.n===n&&x.sets.length);if(e)return{sets:e.sets,u:s.u}}return null};
+const bestFor=(log,n)=>{let b=0;for(const s of log)for(const e of s.ex)if(e.n===n)for(const t of e.sets)b=Math.max(b,+t.w||0);return b};
+const nSets=s=>s.ex.reduce((a,e)=>a+e.sets.length,0);
+const mkSets=l=>l?l.sets.map(t=>({w:t.w,r:t.r,ok:false})):[0,1,2].map(()=>({w:'',r:'',ok:false}));
+
+function Weights({onBusy}){
+  const [log,setLog]=useState(()=>PREF('bw_w_log',[]));
+  const [cur,setCur]=useState(()=>PREF('bw_w_cur',null));
+  const [unit,setUnit]=useState(()=>PREF('bw_w_unit','kg'));
+  const [rest,setRest]=useState(()=>PREF('bw_w_rest',90));
+  const [voice,setVoice]=useState(VOICE);
+  const [resting,setResting]=useState(false);
+  const [left,setLeft]=useState(0);
+  const [open,setOpen]=useState(null);
+  const [sure,setSure]=useState(null);
+  const [custom,setCustom]=useState('');
+  const endRef=useRef(0),unl=useRef(0);
+  const active=!!cur;
+  useEffect(()=>{onBusy(active);return()=>onBusy(false)},[active]);
+  useEffect(()=>{SAVE('bw_w_cur',cur)},[cur]);
+  useEffect(()=>{SAVE('bw_w_log',log)},[log]);
+  useEffect(()=>{
+    if(!resting)return;
+    const id=setInterval(()=>{
+      const l=(endRef.current-Date.now())/1000;setLeft(Math.max(0,l));
+      if(l<=0){clearInterval(id);setResting(false);say('Rest over')}
+    },250);
+    return()=>clearInterval(id);
+  },[resting]);
+
+  const pickUnit=u=>{setUnit(u);SAVE('bw_w_unit',u)};
+  const pickRest=n=>{setRest(n);SAVE('bw_w_rest',n)};
+  const toggleVoice=e=>{VOICE=e.target.checked;SAVE('bw_voice',VOICE);setVoice(VOICE)};
+  const startRest=()=>{
+    if(!unl.current&&VOICE_OK){try{speechSynthesis.speak(new SpeechSynthesisUtterance(' '))}catch(x){}unl.current=1}
+    endRef.current=Date.now()+rest*1000;setLeft(rest);setResting(true);
+  };
+  const start=type=>setCur({type,d:Date.now(),u:unit,ex:WEX[type].map(n=>({n,sets:mkSets(lastFor(log,n))}))});
+  const upd=(ei,fn)=>setCur(c=>({...c,ex:c.ex.map((e,i)=>i===ei?fn(e):e)}));
+  const setVal=(ei,si,k,v)=>upd(ei,e=>({...e,sets:e.sets.map((t,i)=>i===si?{...t,[k]:v}:t)}));
+  const tick=(ei,si)=>{const was=cur.ex[ei].sets[si].ok;setVal(ei,si,'ok',!was);if(!was)startRest()};
+  const addSet=ei=>upd(ei,e=>{const l=e.sets[e.sets.length-1]||{w:'',r:''};return {...e,sets:[...e.sets,{w:l.w,r:l.r,ok:false}]}});
+  const delSet=(ei,si)=>upd(ei,e=>({...e,sets:e.sets.filter((_,i)=>i!==si)}));
+  const delEx=ei=>setCur(c=>({...c,ex:c.ex.filter((_,i)=>i!==ei)}));
+  const addEx=n=>{n=n.trim();if(!n||cur.ex.some(e=>e.n===n))return;setCur(c=>({...c,ex:[...c.ex,{n,sets:mkSets(lastFor(log,n))}]}))};
+  const finish=()=>{
+    const ex=cur.ex.map(e=>({n:e.n,sets:e.sets.filter(t=>t.ok&&+t.r>0).map(t=>({w:+t.w||0,r:+t.r}))})).filter(e=>e.sets.length);
+    if(ex.length)setLog([{id:cur.d,d:cur.d,type:cur.type,u:cur.u,ex},...log].slice(0,200));
+    setCur(null);setResting(false);setSure(null);
+  };
+  const fd=d=>new Date(d).toLocaleDateString(undefined,{day:'numeric',month:'short'});
+  const fmtSets=(sets)=>sets.map(t=>t.r+' × '+t.w).join(', ');
+
+  if(active)return (<>
+    {resting&&<div className="restbar"><span>Rest {fmt(Math.ceil(left))}</span><button className="ghost" style={{padding:'6px 14px'}} onClick={()=>setResting(false)}>Skip</button></div>}
+    <div className="set"><b style={{fontFamily:'Fraunces,Georgia,serif',fontWeight:500,fontSize:20}}>{cur.type}</b><span>{fd(cur.d)} · {cur.u}</span></div>
+    <p>Tick each set when it's done. Only ticked sets are saved.</p>
+    {cur.ex.map((e,ei)=>{const l=lastFor(log,e.n),b=bestFor(log,e.n);return (
+      <div className="card" key={e.n}>
+        <div className="set"><b>{e.n}</b><button className="x" onClick={()=>delEx(ei)} aria-label="Remove exercise">×</button></div>
+        {(l||b>0)&&<p>{l&&'Last: '+fmtSets(l.sets)+' '+l.u}{b>0&&' · Best '+b}</p>}
+        <div className="srow hd"><span>Set</span><span>{cur.u}</span><span>Reps</span><span></span><span></span></div>
+        {e.sets.map((t,si)=>(
+          <div className="srow" key={si}>
+            <span>{si+1}</span>
+            <input className="num" type="number" inputMode="decimal" step="any" value={t.w} placeholder="0" aria-label="Weight" onChange={ev=>setVal(ei,si,'w',ev.target.value)}/>
+            <input className="num" type="number" inputMode="numeric" value={t.r} placeholder="0" aria-label="Reps" onChange={ev=>setVal(ei,si,'r',ev.target.value)}/>
+            <button className={'chk'+(t.ok?' on':'')} onClick={()=>tick(ei,si)} aria-label="Mark set done">✓</button>
+            <button className="x" onClick={()=>delSet(ei,si)} aria-label="Remove set">×</button>
+          </div>
+        ))}
+        <button className="ghost" style={{padding:'8px 16px',alignSelf:'flex-start'}} onClick={()=>addSet(ei)}>+ Add set</button>
+      </div>)})}
+    <div className="card">
+      <div className="set"><span>Add exercise</span></div>
+      <div className="row" style={{justifyContent:'flex-start'}}>{WEX[cur.type].filter(n=>!cur.ex.some(e=>e.n===n)).map(n=>(<button key={n} className="tab" style={{padding:'6px 12px'}} onClick={()=>addEx(n)}>{n}</button>))}</div>
+      <div className="set" style={{gap:8}}><input className="txt" value={custom} placeholder="Custom exercise" onChange={e=>setCustom(e.target.value)}/><button className="ghost" style={{padding:'8px 16px'}} onClick={()=>{addEx(custom);setCustom('')}}>Add</button></div>
+    </div>
+    <div className="row">
+      <button onClick={finish}>Finish workout</button>
+      {sure==='d'?<button className="ghost" onClick={()=>{setCur(null);setResting(false);setSure(null)}}>Tap again to discard</button>:<button className="ghost" onClick={()=>setSure('d')}>Discard</button>}
+    </div>
+  </>);
+
+  return (<>
+    <div className="card">
+      <div className="set"><span>Units</span><div className="row">{['kg','lb'].map(u=>(<button key={u} className={'tab'+(unit===u?' on':'')} style={{padding:'6px 14px'}} onClick={()=>pickUnit(u)}>{u}</button>))}</div></div>
+      <div className="set"><span>Rest timer</span><div className="row">{[60,90,120,180].map(n=>(<button key={n} className={'tab'+(rest===n?' on':'')} style={{padding:'6px 12px'}} onClick={()=>pickRest(n)}>{fmt(n)}</button>))}</div></div>
+      <label className="set">Voice when rest ends<input type="checkbox" checked={voice} onChange={toggleVoice}/></label>
+    </div>
+    {SPLITS.map(([g,ts])=>(
+      <div key={g} style={{display:'flex',flexDirection:'column',gap:8}}>
+        <p>{g}</p>
+        <div className="row" style={{justifyContent:'flex-start'}}>{ts.map(t=>(<button key={t} className="tab" onClick={()=>start(t)}>{t}</button>))}</div>
+      </div>
+    ))}
+    <div className="card">
+      <div className="set"><span>Workouts logged</span><b>{log.length}</b></div>
+      {log.slice(0,8).map(s=>(
+        <div key={s.id}>
+          <button className="hrow" onClick={()=>setOpen(open===s.id?null:s.id)}><span>{fd(s.d)} · {s.type}</span><b>{nSets(s)} sets</b></button>
+          {open===s.id&&(<div style={{display:'flex',flexDirection:'column',gap:6,padding:'0 0 10px'}}>
+            {s.ex.map(e=>(<p key={e.n}><b style={{color:'var(--ink)'}}>{e.n}</b>: {fmtSets(e.sets)} {s.u}</p>))}
+            {sure===s.id?<button className="ghost" style={{padding:'6px 14px',alignSelf:'flex-start'}} onClick={()=>{setLog(log.filter(x=>x.id!==s.id));setSure(null);setOpen(null)}}>Tap again to delete</button>:<button className="ghost" style={{padding:'6px 14px',alignSelf:'flex-start'}} onClick={()=>setSure(s.id)}>Delete</button>}
+          </div>)}
+        </div>
+      ))}
+    </div>
+  </>);
+}
+
+const YANIM={
+"Centering breath":[4,0,[50,0,20,160,18,158,2,2,-2,-2,0],[50,0,172,176,168,172,2,2,-2,-2,0]],
+"Arm circles":[0.7,0,[50,0,0,0,3,3,2,2,-2,-2,0],[50,0,90,90,92,92,2,2,-2,-2,0],[50,0,180,180,178,178,2,2,-2,-2,0],[50,0,-90,-90,-88,-88,2,2,-2,-2,0]],
+"Side bend":[3.5,0,[50,-25,-150,-158,-155,-163,2,2,-2,-2,0],[50,25,150,158,155,163,2,2,-2,-2,0]],
+"Cat–cow":[3,0,[44,66,0,0,0,0,0,-90,0,-90,0,40],[44,80,0,0,0,0,0,-90,0,-90,0,110]],
+"Forward fold":[4,0,[50,0,172,176,168,172,2,2,-2,-2,0],[46,115,15,10,12,8,20,0,18,0,0,170]],
+"Low lunge":[4,0,[53,5,172,176,168,172,80,0,-30,-75,0],[53,10,150,160,146,156,80,0,-30,-75,0]],
+"Gentle squats":[2.5,0,[50,0,90,90,92,92,2,2,-2,-2,0],[44,25,90,90,92,92,80,-15,78,-15,0]],
+"Mountain pose":[3,0,[50,0,8,8,-8,-8,2,2,-2,-2,0],[50,0,12,12,-12,-12,2,2,-2,-2,0]],
+"Chair pose":[3,0,[44,22,160,168,156,164,72,-18,70,-18,0],[44,28,170,176,166,172,75,-18,73,-18,0]],
+"Downward dog":[3.5,0,[47,131,49,49,47,47,-12,-12,-8,-8,0,165],[47,128,52,52,50,50,-14,-14,-10,-10,0,165]],
+"Plank pose":[3,0,[52,66,0,0,0,0,-66,-66,-66,-66,0],[52,64,0,0,0,0,-64,-64,-64,-64,0]],
+"Cobra pose":[4,0,[48,88,-90,-90,-88,-88,-90,-90,-88,-88,0],[46,40,0,0,0,0,-90,-90,-88,-88,0]],
+"Child's pose":[4,0,[28,100,90,90,92,92,60,-90,62,-90,0,95],[28,96,90,90,92,92,60,-90,62,-90,0,95]],
+"Bridge pose":[4,0,[48,-90,90,90,92,92,150,30,152,32,0,-90],[44,-130,85,85,87,87,75,-5,73,-5,0,-90]],
+"Boat pose":[3,0,[46,-40,95,95,97,97,130,130,133,133,0],[46,-48,92,92,94,94,138,138,141,141,0]],
+"Seated forward fold":[4,0,[40,5,172,176,170,174,90,90,92,92,0],[40,50,40,40,42,42,90,90,92,92,0]],
+"Locust pose":[3.5,0,[48,88,-90,-90,-88,-88,-90,-90,-88,-88,0],[48,70,-100,-100,-98,-98,-105,-105,-103,-103,0]],
+"Warrior II":[3,0,[50,0,-90,-90,90,90,-70,0,48,48,0],[50,0,-94,-94,94,94,-72,0,47,47,0]],
+"Triangle pose":[3,0,[50,-68,40,40,180,178,-28,-28,28,28,0],[50,-64,42,42,180,178,-28,-28,28,28,0]],
+"Tree pose":[4,0,[50,0,20,160,18,158,0,0,70,-76,0],[50,0,172,178,-172,-178,0,0,70,-76,0]],
+"Garland pose":[4,0,[46,10,20,160,18,158,100,-30,98,-30,0],[46,16,40,150,38,148,102,-30,100,-30,0]],
+"Happy baby":[3.5,0,[50,-90,126,126,128,128,215,120,218,123,0],[50,-90,120,120,122,122,205,115,208,118,0]],
+"Upward salute":[3.5,0,[50,0,172,176,168,172,2,2,-2,-2,0],[50,-12,195,200,192,197,2,2,-2,-2,0]],
+"Sphinx pose":[4,0,[48,55,5,90,3,88,-90,-90,-88,-88,0],[48,50,5,90,3,88,-90,-90,-88,-88,0]],
+"Corpse pose":[4,0,[47,-90,88,88,86,86,88,88,92,92,0],[47,-90,88,88,86,86,89,89,93,93,0]]
+};
+const YH={"Centering breath":["Inhale arms up, exhale hands to your heart.",0],"Arm circles":["Big slow circles, then reverse.",0],"Side bend":["Reach over and lengthen the side body.",0],"Cat–cow":["Arch and round your spine with your breath.",0],"Forward fold":["Soften your knees and let your head hang.",0],"Low lunge":["Sink your hips and lift your arms.",1],"Gentle squats":["Hips back, chest tall.",0],"Mountain pose":["Stand tall and press evenly through both feet.",0],"Chair pose":["Sit back, arms up, weight in your heels.",0],"Downward dog":["Press the floor away and lift your hips.",0],"Plank pose":["Shoulders over wrists, one long line.",0],"Cobra pose":["Lift your chest and keep your shoulders soft.",0],"Child's pose":["Sink your hips back and rest your forehead.",0],"Bridge pose":["Press your feet down and lift your hips.",0],"Boat pose":["Lean back, lift your legs, open your chest.",0],"Seated forward fold":["Hinge from the hips and reach toward your feet.",0],"Locust pose":["Lift your chest and legs, reach back.",0],"Warrior II":["Front knee bent, arms wide, gaze over your hand.",1],"Triangle pose":["Long side, one hand low, one reaching up.",1],"Tree pose":["Find a focal point and balance.",1],"Garland pose":["Deep squat, elbows pressing into your knees.",0],"Happy baby":["Hug your knees and rock gently.",0],"Upward salute":["Reach up and lean back gently.",0],"Sphinx pose":["Rest on your forearms and lift your chest.",0],"Corpse pose":["Lie still and let your body feel heavy.",0]};
+const WARM=[["Centering breath",40],["Arm circles",40],["Side bend",40],["Cat–cow",60],["Forward fold",40],["Low lunge",40],["Gentle squats",40]];
+const RELAX=[["Child's pose",60],["Seated forward fold",60],["Happy baby",60],["Corpse pose",120]];
+const Y_POOL=["Mountain pose","Chair pose","Forward fold","Downward dog","Plank pose","Cobra pose","Child's pose","Cat–cow","Bridge pose","Boat pose","Seated forward fold","Locust pose","Warrior II","Triangle pose","Low lunge","Tree pose","Garland pose","Happy baby","Upward salute","Sphinx pose"];
+
+const buildYoga=()=>{
+  const a=[];
+  WARM.forEach(([n,s],i)=>a.push({ph:'Warm-up',i,N:WARM.length,n,s}));
+  shuf(Y_POOL).forEach((n,i)=>a.push({ph:'Main practice',i,N:Y_POOL.length,n,s:60}));
+  RELAX.forEach(([n,s],i)=>a.push({ph:'Relax',i,N:RELAX.length,n,s}));
+  return a;
+};
+const loadYoga=()=>PREF('bw_yoga_log',[]);
+
+function Yoga({onBusy}){
+  const [st,setSt]=useState('idle');
+  const [idx,setIdx]=useState(0);
+  const [left,setLeft]=useState(0);
+  const [paused,setPaused]=useState(false);
+  const [voice,setVoice]=useState(VOICE);
+  const [log,setLog]=useState(loadYoga);
+  const segs=useRef([]),remRef=useRef(null),leftRef=useRef(0);
+  useEffect(()=>{onBusy(st==='run');return()=>onBusy(false)},[st]);
+  const toggleVoice=e=>{VOICE=e.target.checked;SAVE('bw_voice',VOICE);setVoice(VOICE)};
+  const start=()=>{segs.current=buildYoga();remRef.current=null;setPaused(false);setIdx(0);setSt('run')};
+  const elapsedAt=(i)=>segs.current.slice(0,i).reduce((a,x)=>a+x.s,0)+((segs.current[i]||{s:0}).s-leftRef.current);
+  const finish=(done,i)=>{
+    const secs=Math.round(elapsedAt(i));
+    if(done||secs>=60){const l=[{d:Date.now(),s:done?1800:secs,full:done},...log].slice(0,50);setLog(l);SAVE('bw_yoga_log',l)}
+    if(done)say('Session complete. Well done. Namaste.');else{try{speechSynthesis.cancel()}catch(x){}}
+    setPaused(false);setSt(done?'done':'idle');
+  };
+  const pause=()=>{remRef.current=leftRef.current;try{speechSynthesis.cancel()}catch(x){}setPaused(true)};
+  const skip=()=>{remRef.current=null;if(idx+1<segs.current.length)setIdx(idx+1);else finish(true,idx)};
+  useEffect(()=>{
+    if(st!=='run'||paused)return;
+    const seg=segs.current[idx],nx=segs.current[idx+1];
+    const resumed=remRef.current!=null;
+    const d0=resumed?remRef.current:seg.s;remRef.current=null;
+    if(!resumed){
+      const intro=seg.i===0?(seg.ph==='Warm-up'?'Warm-up. Five minutes. ':seg.ph==='Relax'?'Relax. Five minutes. ':'Main practice. Twenty minutes of poses. '):'';
+      say(intro+seg.n+'. '+YH[seg.n][0]);
+    }
+    const end=Date.now()+d0*1000;
+    let sw=d0<=seg.s/2||!YH[seg.n][1],nxs=d0<=8||seg.s<20||!nx;
+    setLeft(d0);leftRef.current=d0;
+    const id=setInterval(()=>{
+      const l=(end-Date.now())/1000;setLeft(Math.max(0,l));leftRef.current=l;
+      if(!sw&&l<=seg.s/2){sw=true;say('Switch sides')}
+      if(!nxs&&l<=8){nxs=true;say('Next: '+nx.n)}
+      if(l<=0){clearInterval(id);if(nx)setIdx(idx+1);else finish(true,idx)}
+    },200);
+    return()=>clearInterval(id);
+  },[st,idx,paused]);
+
+  const seg=segs.current[idx]||{n:'Centering breath',s:40,ph:'Warm-up',i:0,N:1};
+  const total=segs.current.reduce((a,x)=>a+x.s,0)||1800;
+  const elapsed=st==='run'?Math.min(total,elapsedAt(idx)):0;
+  const frac=seg.s?Math.min(1,left/seg.s):0;
+  const col=seg.ph==='Warm-up'?'var(--hold)':seg.ph==='Relax'?'var(--mute)':'var(--orb)';
+  const nxt=segs.current[idx+1];
+  const sided=YH[seg.n]&&YH[seg.n][1];
+  const flip=!!sided&&left<=seg.s/2;
+  const longest=log.length?Math.max(...log.map(x=>x.s)):0;
+  return (<>
+    {st==='idle'&&(<>
+      <div className="card">
+        <div className="set"><span>Warm-up</span><b>5:00</b></div>
+        <div className="set"><span>Main practice, 20 poses at 1:00</span><b>20:00</b></div>
+        <div className="set"><span>Relax, ending in corpse pose</span><b>5:00</b></div>
+        <div className="set"><span>Total</span><b>30:00</b></div>
+        <label className="set">Voice guidance<input type="checkbox" checked={voice} onChange={toggleVoice}/></label>
+        <div className="set"><span>Not hearing it? Check your media volume.</span><button className="ghost" style={{padding:'8px 16px'}} onClick={testVoice}>Test voice</button></div>
+      </div>
+      <div className="row"><button onClick={start}>Start session</button></div>
+      <p className="warn">The main practice shuffles a different order of poses each time. Move gently, never force a stretch, and stop if you feel pain or dizziness. Check with a doctor first if you are pregnant, injured or have a medical condition.</p>
+      <div className="card">
+        <div className="set"><span>Sessions logged</span><b>{log.length}</b></div>
+        {log.slice(0,3).map((x,i)=>(<div className="hist" key={i}><span>{new Date(x.d).toLocaleDateString()}</span><b>{x.full?'Full session':fmt(x.s)}</b></div>))}
+      </div>
+    </>)}
+    {st==='run'&&(
+      <div className="stage" aria-live="polite">
+        <p>{seg.ph} · {seg.i+1} of {seg.N}</p>
+        <div className="ring ex">
+          <svg viewBox="0 0 260 260" aria-hidden="true">
+            <circle cx="130" cy="130" r="112" fill="none" stroke="var(--line)" strokeWidth="10"/>
+            <circle cx="130" cy="130" r="112" fill="none" stroke={col} strokeWidth="10" strokeLinecap="round" strokeDasharray="703.7" strokeDashoffset={703.7*(1-frac)} transform="rotate(-90 130 130)"/>
+          </svg>
+          <div className="stick"><Stick name={seg.n} paused={paused} flip={flip}/></div>
+          <div className="ringtxt">{left<60?Math.ceil(left):fmt(Math.ceil(left))}</div>
+        </div>
+        <div className="label">{paused?'Paused':seg.n}</div>
+        <p>{YH[seg.n][0]}</p>
+        <div className="bar" aria-hidden="true"><div style={{width:(100*elapsed/total)+'%'}}/></div>
+        <p>{fmt(Math.max(0,total-elapsed))} left{nxt?' · Next: '+nxt.n:''}</p>
+        <div className="row">
+          {paused?<button onClick={()=>setPaused(false)}>Resume</button>:<button onClick={pause}>Pause</button>}
+          <button className="ghost" onClick={skip}>Skip</button>
+          <button className="ghost" onClick={()=>finish(false,idx)}>End</button>
+        </div>
+      </div>
+    )}
+    {st==='done'&&(
+      <div className="stage">
+        <div className="label">Session complete</div>
+        <div className="times"><div><span>30:00</span><p>Total time</p></div></div>
+        <p>Take a moment before you get up.</p>
+        <div className="row"><button onClick={start}>Go again</button><button className="ghost" onClick={()=>setSt('idle')}>Back to start</button></div>
+      </div>
+    )}
+  </>);
+}
+
+const JQ=[['a','What did you achieve today?','Even something small counts.'],['g','What are you grateful for?','A person, a moment, anything.'],['h','What are your hopes for tomorrow?','One thing you are looking forward to.']];
+const dayKey=(d=new Date())=>{const z=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate())};
+const dayLabel=k=>new Date(k+'T12:00:00').toLocaleDateString(undefined,{weekday:'short',day:'numeric',month:'short'});
+const streakOf=log=>{const days=new Set(log.map(e=>e.day));const d=new Date();if(!days.has(dayKey(d)))d.setDate(d.getDate()-1);let n=0;while(days.has(dayKey(d))){n++;d.setDate(d.getDate()-1)}return n};
+
+function Journal(){
+  const today=dayKey();
+  const [log,setLog]=useState(()=>PREF('bw_j_log',[]));
+  const [draft,setDraft]=useState(()=>{
+    const d=PREF('bw_j_draft',null);
+    if(d&&d.day===dayKey())return d;
+    const e=PREF('bw_j_log',[]).find(x=>x.day===dayKey());
+    return e?{day:e.day,a:e.a,g:e.g,h:e.h}:{day:dayKey(),a:'',g:'',h:''};
+  });
+  const [open,setOpen]=useState(null);
+  const [sure,setSure]=useState(null);
+  const [saved,setSaved]=useState(false);
+  useEffect(()=>{SAVE('bw_j_draft',draft)},[draft]);
+  useEffect(()=>{SAVE('bw_j_log',log)},[log]);
+  const set=k=>e=>{setSaved(false);setDraft({...draft,[k]:e.target.value})};
+  const has=log.some(e=>e.day===today);
+  const empty=!(draft.a.trim()||draft.g.trim()||draft.h.trim());
+  const save=()=>{
+    if(empty)return;
+    const e={day:today,d:Date.now(),a:draft.a.trim(),g:draft.g.trim(),h:draft.h.trim()};
+    setLog([e,...log.filter(x=>x.day!==today)].sort((x,y)=>x.day<y.day?1:-1));
+    setSaved(true);
+  };
+  const streak=streakOf(log);
+  return (<>
+    <div className="set"><b>{dayLabel(today)}</b><span>{streak>0?streak+' day streak':'Start your streak'}</span></div>
+    {JQ.map(([k,q,ph])=>(
+      <div className="card" key={k}>
+        <label htmlFor={'j-'+k}><b>{q}</b></label>
+        <textarea id={'j-'+k} className="ta" rows="2" maxLength="300" placeholder={ph} value={draft[k]} onChange={set(k)}/>
+        <p style={{textAlign:'right'}}>{draft[k].length}/300</p>
+      </div>
+    ))}
+    <div className="row"><button onClick={save} disabled={empty} style={{opacity:empty?0.5:1}}>{has?'Update today':'Save entry'}</button></div>
+    {saved&&<p style={{textAlign:'center'}}>Saved. See you tomorrow.</p>}
+    <p className="warn">Entries are stored only in this browser on this device.</p>
+    <div className="card">
+      <div className="set"><span>Entries</span><b>{log.length}</b></div>
+      {log.slice(0,30).map(e=>(
+        <div key={e.day}>
+          <button className="hrow" onClick={()=>setOpen(open===e.day?null:e.day)}><span>{dayLabel(e.day)}</span><b>{open===e.day?'Hide':'View'}</b></button>
+          {open===e.day?(<div style={{display:'flex',flexDirection:'column',gap:8,paddingBottom:10}}>
+            {JQ.map(([k,q])=>e[k]?(<div key={k}><p><b style={{color:'var(--ink)'}}>{q}</b></p><p style={{color:'var(--ink)'}}>{e[k]}</p></div>):null)}
+            {sure===e.day?<button className="ghost" style={{padding:'6px 14px',alignSelf:'flex-start'}} onClick={()=>{setLog(log.filter(x=>x.day!==e.day));setSure(null);setOpen(null)}}>Tap again to delete</button>:<button className="ghost" style={{padding:'6px 14px',alignSelf:'flex-start'}} onClick={()=>setSure(e.day)}>Delete</button>}
+          </div>):null}
+        </div>
+      ))}
+    </div>
+  </>);
+}
+
+function App(){
+  const [phase,setPhase]=useState('idle');
+  const [mode,setMode]=useState(()=>PREF('bw_mode','breath'));
+  const [busy,setBusy]=useState(false);
+  const [cfg,setCfg]=useState(()=>({style:'power',rounds:3,breaths:30,pace:1.7,...PREF('bw_cfg',{}),waves:WAVES,voice:VOICE}));
+  useEffect(()=>{const {waves,voice,...rest}=cfg;SAVE('bw_cfg',rest)},[cfg]);
+  useEffect(()=>{SAVE('bw_mode',mode)},[mode]);
+  const [round,setRound]=useState(1);
+  const [breath,setBreath]=useState(1);
+  const [up,setUp]=useState(false);
+  const [t,setT]=useState(0);
+  const [times,setTimes]=useState([]);
+  const [hist,setHist]=useState(load);
+  const timesRef=useRef([]);
+  const startRef=useRef(0);
+  const set=k=>e=>setCfg({...cfg,[k]:+e.target.value});
+  const setStyle=st=>setCfg({...cfg,style:st,breaths:st==='rapid'?40:30,pace:st==='rapid'?0.6:1.7});
+  const toggle=k=>e=>{setCfg({...cfg,[k]:e.target.checked});if(k==='waves')WAVES=e.target.checked;else VOICE=e.target.checked;SAVE('bw_'+k,e.target.checked);if(e.target.checked){initAudio();if(k==='voice')say('Voice on',true)}};
+
+  const begin=()=>{initAudio();WAVES=cfg.waves;VOICE=cfg.voice;stopWave();startWave();say('Round 1. Get comfortable, and begin.');timesRef.current=[];setTimes([]);setRound(1);setPhase('breathing')};
+  const quit=()=>{stopAll();setPhase('idle')};
+
+  // Power breathing: inhale/exhale loop, ends after the final exhale
+  useEffect(()=>{
+    if(phase!=='breathing')return;
+    let n=0,inhaling=true;
+    setBreath(1);setUp(true);wave(1,cfg.pace);
+    const id=setInterval(()=>{
+      if(inhaling){inhaling=false;setUp(false);wave(0.1,cfg.pace)}
+      else{
+        n++;
+        if(n>=cfg.breaths){clearInterval(id);wave(0,1.5);say('Let go, and hold. Stay relaxed.');setPhase('retention');return}
+        inhaling=true;setUp(true);setBreath(n+1);wave(1,cfg.pace);if(n+1===cfg.breaths)say('Last breath');else if(n%10===0)say(String(n));
+      }
+    },cfg.pace*1000);
+    return()=>clearInterval(id);
+  },[phase,round]);
+
+  // Retention: stopwatch after exhale
+  useEffect(()=>{
+    if(phase!=='retention')return;
+    startRef.current=Date.now();setT(0);
+    let m=0;
+    const id=setInterval(()=>{const x=(Date.now()-startRef.current)/1000;setT(x);const mm=Math.floor(x/60);if(mm>m){m=mm;say(mm+(mm>1?' minutes':' minute'))}},100);
+    return()=>clearInterval(id);
+  },[phase]);
+
+  const endHold=()=>{
+    const secs=(Date.now()-startRef.current)/1000;
+    timesRef.current=[...timesRef.current,secs];
+    setTimes(timesRef.current);
+    wave(1,2);say('Breathe in deeply, and hold.');setPhase('recovery');
+  };
+
+  // Recovery: inhale deeply, hold 15 s
+  useEffect(()=>{
+    if(phase!=='recovery')return;
+    const end=Date.now()+15000;setT(15);
+    const id=setInterval(()=>{
+      const left=Math.max(0,(end-Date.now())/1000);setT(left);
+      if(left<=0){
+        clearInterval(id);
+        if(round<cfg.rounds){wave(0.1,1);say('Let go. Round '+(round+1));setRound(r=>r+1);setPhase('breathing')}
+        else{
+          const h=[{d:Date.now(),t:timesRef.current},...hist].slice(0,30);
+          setHist(h);save(h);say('Let go. Session complete. Well done.');stopWave();setPhase('done');
+        }
+      }
+    },200);
+    return()=>clearInterval(id);
+  },[phase]);
+
+  const best=hist.length?Math.max(...hist.flatMap(h=>h.t)):0;
+  const hold=phase==='retention'||phase==='recovery';
+  const rapid=cfg.style==='rapid';
+  const scale=phase==='breathing'?(up?(rapid?1.3:1.55):(rapid?0.95:0.8)):1.1;
+
+  return (
+    <div className="app">
+      <div>
+        <h1>Wellness Toolkit</h1>
+        <p>{mode==='breath'?'Power breaths, an exhale hold, then a recovery breath.':mode==='cold'?'Time your cold shower, with a short countdown to get in.':mode==='hiit'?'Work and rest intervals with voice cues.':mode==='weights'?'Log your lifts and see how you progress.':mode==='yoga'?'A guided 30 minute session: warm-up, poses and relaxation.':'Three short questions to close out your day.'}</p>
+      </div>
+      {!busy&&(phase==='idle'||phase==='done')&&(<div className="row">
+        <button className={'tab'+(mode==='breath'?' on':'')} onClick={()=>setMode('breath')}>Breathing</button>
+        <button className={'tab'+(mode==='cold'?' on':'')} onClick={()=>setMode('cold')}>Cold shower</button>
+        <button className={'tab'+(mode==='hiit'?' on':'')} onClick={()=>setMode('hiit')}>HIIT</button>
+        <button className={'tab'+(mode==='weights'?' on':'')} onClick={()=>setMode('weights')}>Weights</button>
+        <button className={'tab'+(mode==='yoga'?' on':'')} onClick={()=>setMode('yoga')}>Yoga</button>
+        <button className={'tab'+(mode==='journal'?' on':'')} onClick={()=>setMode('journal')}>Journal</button>
+      </div>)}
+      {mode==='cold'&&<Cold onBusy={setBusy}/>}
+      {mode==='hiit'&&<Hiit onBusy={setBusy}/>}
+      {mode==='weights'&&<Weights onBusy={setBusy}/>}
+      {mode==='yoga'&&<Yoga onBusy={setBusy}/>}
+      {mode==='journal'&&<Journal/>}
+
+      {mode==='breath'&&phase==='idle'&&(<>
+        <div className="card">
+          <div className="row">
+            <button className={'tab'+(cfg.style==='power'?' on':'')} onClick={()=>setStyle('power')}>Power breathing</button>
+            <button className={'tab'+(cfg.style==='rapid'?' on':'')} onClick={()=>setStyle('rapid')}>Rapid breathing</button>
+          </div>
+          <p>{cfg.style==='power'?'Deep, full breaths at a steady pace, then a hold.':'Fast, shallow breaths, then a hold. Expect tingling or light-headedness; stay seated or lying down.'}</p>
+          <label className="set">Rounds: {cfg.rounds}<input type="range" min="1" max="5" value={cfg.rounds} onChange={set('rounds')}/></label>
+          <label className="set">Breaths per round: {cfg.breaths}<input type="range" min="20" max="60" step="5" value={cfg.breaths} onChange={set('breaths')}/></label>
+          <label className="set">Ocean waves<input type="checkbox" checked={cfg.waves} onChange={toggle('waves')}/></label>
+          <label className="set">Voice guidance<input type="checkbox" checked={cfg.voice} onChange={toggle('voice')}/></label>
+          <div className="set"><span>Not hearing it? Check your media volume.</span><button className="ghost" style={{padding:'8px 16px'}} onClick={testVoice}>Test voice</button></div>
+          <label className="set">Seconds per half-breath: {cfg.pace.toFixed(1)}<input type="range" min="0.3" max="10" step="0.1" value={cfg.pace} onChange={set('pace')}/></label>
+        </div>
+        <div className="row"><button onClick={begin}>Start session</button></div>
+        <p className="warn">Sit or lie down in a safe place. Never practise in or near water, while driving, or standing. Stop if you feel faint. Check with a doctor first if you have a heart condition, epilepsy, high blood pressure or are pregnant.</p>
+        <div className="card">
+          <div className="set"><span>Longest hold</span><b>{best?fmt(best):'No sessions yet'}</b></div>
+          {hist.slice(0,5).map((h,i)=>(
+            <div className="hist" key={i}><span>{new Date(h.d).toLocaleDateString()}</span><b>{h.t.map(fmt).join(' · ')}</b></div>
+          ))}
+        </div>
+      </>)}
+
+      {mode==='breath'&&phase!=='idle'&&phase!=='done'&&(
+        <div className="stage" aria-live="polite">
+          <p>Round {round} of {cfg.rounds}</p>
+          <div className="orbwrap">
+            <div className={'orb'+(hold?' hold':'')} style={{'--d':cfg.pace+'s',transform:`scale(${scale})`}}>
+              <div className="big">
+                {phase==='breathing'&&breath}
+                {phase==='retention'&&fmt(t)}
+                {phase==='recovery'&&Math.ceil(t)}
+              </div>
+            </div>
+          </div>
+          <div className="label">
+            {phase==='breathing'&&(up?'Breathe in':'Let go')}
+            {phase==='retention'&&'Hold with empty lungs'}
+            {phase==='recovery'&&'Breathe in deep and hold'}
+          </div>
+          <div className="row">
+            {phase==='retention'&&<button onClick={endHold}>Take a breath</button>}
+            <button className="ghost" onClick={quit}>End session</button>
+          </div>
+        </div>
+      )}
+
+      {mode==='breath'&&phase==='done'&&(
+        <div className="stage">
+          <div className="label">Session complete</div>
+          <div className="times">{times.map((x,i)=><div key={i}><span>{fmt(x)}</span><p>Round {i+1}</p></div>)}</div>
+          <div className="row"><button onClick={begin}>Go again</button><button onClick={()=>setMode('cold')}>Cold shower</button><button className="ghost" onClick={quit}>Back to start</button></div>
+        </div>
+      )}
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
