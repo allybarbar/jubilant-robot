@@ -29,12 +29,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "18"
-          cache: "npm"
-          cache-dependency-path: wellness-toolkit/package-lock.json
 
       - name: Install dependencies
         working-directory: ./wellness-toolkit
-        run: npm ci
+        run: npm install
 
       - name: Build app
         working-directory: ./wellness-toolkit
