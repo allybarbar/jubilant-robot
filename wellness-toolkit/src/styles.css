@@ -9,7 +9,7 @@ h1{font:300 28px/1.1 Fraunces,Georgia,serif;margin:8px 0 0}
 p{margin:0;color:var(--mute);line-height:1.5;font-size:14px}
 .stage{display:flex;flex-direction:column;align-items:center;gap:18px;padding:12px 0}
 .orbwrap{width:min(78vw,300px);aspect-ratio:1;display:grid;place-items:center}
-.orb{width:62%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--orb2),var(--orb));display:grid;place-items:center;transition:transform var(--d,1.7s) ease-in-out;box-shadow:0 0 0 1px var(--line)}
+.orb{width:62%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--orb2),var(--orb));display:grid;place-items:center;transition:transform var(--d,1.7s) ease-in-out;animation:pulse 2.6s ease-in-out infinite}
 .orb.hold{background:radial-gradient(circle at 35% 30%,var(--bg),var(--hold));transition:transform .6s ease}
 .big{font:300 64px/1 Fraunces,Georgia,serif;color:#fff;font-variant-numeric:tabular-nums}
 .orb.hold .big{color:var(--ink)}
@@ -17,7 +17,7 @@ p{margin:0;color:var(--mute);line-height:1.5;font-size:14px}
 .row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 button{font:600 15px Manrope,sans-serif;border:0;border-radius:999px;padding:14px 26px;background:var(--ink);color:var(--bg);cursor:pointer}
 button.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
-button:focus-visible,input:focus-visible{outline:3px solid var(--orb);outline-offset:2px}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--orb);outline-offset:2px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:14px}
 .set{display:flex;justify-content:space-between;align-items:center;font-size:14px}
 .set input[type=range]{width:55%;accent-color:var(--orb)}
@@ -41,10 +41,14 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--orb);outline-of
 .chk{width:36px;height:36px;border-radius:50%;padding:0;background:transparent;color:var(--mute);box-shadow:inset 0 0 0 1px var(--line);font-size:16px}
 .chk.on{background:var(--orb);color:#fff;box-shadow:none}
 .x{background:none;color:var(--mute);padding:0 4px;font-size:22px;line-height:1;border-radius:6px}
-.restbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:2;display:flex;justify-content:space-between;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;font:500 18px Fraunces,Georgia,serif;font-variant-numeric:tabular-nums}
+.restbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:2;display:flex;justify-content:space-between;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
 .hrow{display:flex;justify-content:space-between;width:100%;background:none;color:var(--ink);border-radius:0;border-top:1px solid var(--line);padding:12px 0;font:600 14px Manrope,sans-serif;text-align:left}
-@media (prefers-reduced-motion:reduce){.orb{transition:none}}
+@media (prefers-reduced-motion:reduce){.orb{transition:none;animation:none}}
 .bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;width:100%}
 .bar>div{height:100%;background:var(--orb);transition:width .3s linear}
 .ta{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:400 15px/1.4 Manrope,sans-serif;resize:none}
 textarea:focus-visible{outline:3px solid var(--orb);outline-offset:2px}
+.voice-controls{margin-top:-4px}
+.voice-picker{display:flex;align-items:center;gap:10px;width:100%;color:var(--mute);font-size:13px}
+.voice-picker span{min-width:42px}
+.voice-picker select{flex:1;padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 14px Manrope,sans-serif}
