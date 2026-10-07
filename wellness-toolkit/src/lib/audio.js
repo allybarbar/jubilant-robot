@@ -9,8 +9,9 @@ export const startWave=()=>{if(!AC||!audio.waves||WAVE)return;try{const s=AC.cre
 export const stopWave=()=>{if(!WAVE)return;try{WAVE.g.gain.setTargetAtTime(0.0001,AC.currentTime,0.3);WAVE.s.stop(AC.currentTime+1.5)}catch(e){}WAVE=null};
 export const wave=(level,d)=>{if(!WAVE)return;try{const n=AC.currentTime,k=d*0.4;WAVE.g.gain.cancelScheduledValues(n);WAVE.f.frequency.cancelScheduledValues(n);WAVE.g.gain.setTargetAtTime(0.02+level, n, 0.08);WAVE.f.frequency.setTargetAtTime(400 + k*500, n,0.1)}catch(e){};
 };
+export const VOICE_OK=typeof window!=='undefined'&&'speechSynthesis' in window&&typeof SpeechSynthesisUtterance!=='undefined';
 export const say=(t,force)=>{
-  if(!('speechSynthesis' in window)||!(audio.voice||force))return;
+  if(!VOICE_OK||!(audio.voice||force))return;
   try{
     const ss=window.speechSynthesis;
     const busy=ss.speaking||ss.pending;
@@ -22,6 +23,6 @@ export const say=(t,force)=>{
     setTimeout(()=>{try{ss.resume();ss.speak(u)}catch(e){}},busy?100:0);
   }catch(e){}
 };
-export const testVoice=()=>{initAudio();if(!('speechSynthesis' in window)){alert("This browser can't play voice guidance. Try opening the page in Safari or Chrome.");return}say('Voice is working. Breathe in, and let the pattern settle.',true);};
+export const testVoice=()=>{initAudio();if(!VOICE_OK){alert("This browser can't play voice guidance. Try opening the page in Safari or Chrome.");return}say('Voice is working. Breathe in, and let the pattern settle.',true);};
 export const stopAll=()=>{stopWave();try{speechSynthesis.cancel()}catch(e){};
 };
