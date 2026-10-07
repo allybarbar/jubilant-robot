@@ -48,7 +48,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 .bar>div{height:100%;background:var(--orb);transition:width .3s linear}
 .ta{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:400 15px/1.4 Manrope,sans-serif;resize:none}
 textarea:focus-visible{outline:3px solid var(--orb);outline-offset:2px}
-.voice-controls{margin-top:-4px}
+.voice-controls{margin-top:0}
 .voice-picker{display:flex;align-items:center;gap:10px;width:100%;color:var(--mute);font-size:13px}
 .voice-picker span{min-width:42px}
 .voice-picker select{flex:1;padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 14px Manrope,sans-serif}
