@@ -30,14 +30,14 @@ async function generate({id,data}){
     const result=await generator([
       {
         role:'system',
-        content:'Briefly summarize only patterns supported by the data. Ignore empty sections. Do not diagnose or recommend treatment.'
+        content:'You are a data analyst. Analyze only the records provided. Never describe an app, tool, feature, or how the records were collected. Do not invent facts or infer anything the records cannot support. Do not diagnose or give medical advice.'
       },
       {
         role:'user',
-        content:`Give at most 2 very concise observations from this data:\n${JSON.stringify(data)}`
+        content:`Find up to 2 useful observations in these wellness records. Focus on recorded activity, such as frequency, changes over dates, durations, completed sessions, or exercise weights and reps. Each observation must cite concrete evidence from the records (an activity and a count, value, date, or comparison). Avoid generic encouragement. If no meaningful pattern is supported, say so plainly. Output bullet points only.\n\nRecords:\n${JSON.stringify(data)}`
       }
     ],{
-      max_new_tokens:80,
+      max_new_tokens:120,
       do_sample:false,
       streamer:new TextStreamer(generator.tokenizer,{
         skip_prompt:true,

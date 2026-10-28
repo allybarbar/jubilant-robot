@@ -18,7 +18,7 @@ const INTRO={
   yoga:'A guided 30 minute session: warm-up, poses and relaxation.',
   journal:'Three short questions to close out your day.',
   body:'Record your weight, height, waist and blood pressure.',
-  insights:'A private, on-device AI summary of your recent activity.'
+  insights:'Private, on-device insights based on your recent activity data.'
 };
 
 export default function App(){
