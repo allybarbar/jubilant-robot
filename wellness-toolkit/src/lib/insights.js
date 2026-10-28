@@ -82,7 +82,7 @@ export function hasInsightsData(data){
     .some(key=>Array.isArray(data[key])&&data[key].length>0);
 }
 
-export async function generateInsights(data,onProgress){
+export async function generateInsights(data,onProgress,onText){
   if(!generatorPromise){
     generatorPromise=(async()=>{
       const {pipeline}=await import('@huggingface/transformers');
@@ -102,6 +102,8 @@ export async function generateInsights(data,onProgress){
     throw error;
   }
 
+  const {TextStreamer}=await import('@huggingface/transformers');
+  onProgress?.({status:'generating'});
   const result=await generator([
     {
       role:'system',
@@ -111,7 +113,15 @@ export async function generateInsights(data,onProgress){
       role:'user',
       content:`Write a short summary with 2-4 useful observations and one gentle reflection question. The data is private and is being processed locally in this browser:\n${JSON.stringify(data)}`
     }
-  ],{max_new_tokens:180,do_sample:false});
+  ],{
+    max_new_tokens:180,
+    do_sample:false,
+    streamer:new TextStreamer(generator.tokenizer,{
+      skip_prompt:true,
+      skip_special_tokens:true,
+      callback_function:onText
+    })
+  });
 
   const generated=result?.[0]?.generated_text;
   const text=Array.isArray(generated)?generated.at(-1)?.content:generated;

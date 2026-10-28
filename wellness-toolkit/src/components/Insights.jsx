@@ -22,8 +22,10 @@ export default function Insights(){
           setStatus(`Downloading ${file} (${Math.round(progress.progress)}%).`);
         }else if(progress.status==='done'){
           setStatus('Model ready. Generating your summary on this device…');
+        }else if(progress.status==='generating'){
+          setStatus('Generating your summary on this device…');
         }
-      });
+      },text=>setSummary(current=>current+text));
       setSummary(result);
       setStatus('Summary generated on this device.');
     }catch(cause){
@@ -47,7 +49,7 @@ export default function Insights(){
       <button onClick={generate} disabled={busy||!hasData} style={{opacity:busy||!hasData?0.5:1}}>
         {busy?'Generating…':'Generate AI summary'}
       </button>
-      {busy&&<div className="bar" role="progressbar" aria-label="Loading the on-device AI model"><div className="indeterminate"/></div>}
+      {busy&&<div className="bar" role="progressbar" aria-label="On-device AI progress"><div className="indeterminate"/></div>}
       {status&&<p role="status">{status}</p>}
       {error&&<p className="insights-error" role="alert">Could not generate the summary: {error}</p>}
     </div>
