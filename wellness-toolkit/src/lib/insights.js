@@ -1,6 +1,3 @@
-const MODEL_ID='onnx-community/SmolLM2-360M-Instruct-ONNX';
-let generatorPromise;
-
 const readLog=key=>{
   try{
     const value=JSON.parse(localStorage.getItem(key)||'[]');
@@ -82,49 +79,64 @@ export function hasInsightsData(data){
     .some(key=>Array.isArray(data[key])&&data[key].length>0);
 }
 
-export async function generateInsights(data,onProgress,onText){
-  if(!generatorPromise){
-    generatorPromise=(async()=>{
-      const {pipeline}=await import('@huggingface/transformers');
-      return pipeline('text-generation',MODEL_ID,{
-        device:'wasm',
-        dtype:'q4',
-        progress_callback:onProgress
-      });
-    })();
-  }
+let insightsWorker;
+let nextRequestId=0;
+const pendingRequests=new Map();
 
-  let generator;
-  try{
-    generator=await generatorPromise;
-  }catch(error){
-    generatorPromise=null;
-    throw error;
-  }
+const rejectPendingRequests=error=>{
+  for(const request of pendingRequests.values())request.reject(error);
+  pendingRequests.clear();
+};
 
-  const {TextStreamer}=await import('@huggingface/transformers');
-  onProgress?.({status:'generating'});
-  const result=await generator([
-    {
-      role:'system',
-      content:'You are a careful wellness reflection assistant. Summarize only patterns supported by the supplied personal activity data. Do not diagnose, assess medical risk, or recommend treatment. Do not invent missing information. Be warm, concise, and specific. Mention when there is too little data to identify a trend.'
-    },
-    {
-      role:'user',
-      content:`Write a short summary with 2-4 useful observations and one gentle reflection question. The data is private and is being processed locally in this browser:\n${JSON.stringify(data)}`
+const getInsightsWorker=()=>{
+  if(insightsWorker)return insightsWorker;
+
+  const worker=new Worker(new URL('../workers/insights.worker.js',import.meta.url),{type:'module'});
+  worker.addEventListener('message',event=>{
+    const {id,type,progress,text,error}=event.data;
+    const request=pendingRequests.get(id);
+    if(!request)return;
+
+    if(type==='progress'){
+      request.onProgress?.(progress);
+    }else if(type==='text'){
+      request.onText?.(text);
+    }else if(type==='done'){
+      pendingRequests.delete(id);
+      request.resolve(text);
+    }else if(type==='error'){
+      pendingRequests.delete(id);
+      request.reject(new Error(error));
     }
-  ],{
-    max_new_tokens:180,
-    do_sample:false,
-    streamer:new TextStreamer(generator.tokenizer,{
-      skip_prompt:true,
-      skip_special_tokens:true,
-      callback_function:onText
-    })
   });
+  const handleWorkerError=event=>{
+    event.preventDefault();
+    const error=new Error(event.message||'The on-device model worker failed.');
+    rejectPendingRequests(error);
+    worker.terminate();
+    if(insightsWorker===worker)insightsWorker=null;
+  };
+  worker.addEventListener('error',handleWorkerError);
+  worker.addEventListener('messageerror',()=>{
+    rejectPendingRequests(new Error('Could not read a response from the on-device model worker.'));
+    worker.terminate();
+    if(insightsWorker===worker)insightsWorker=null;
+  });
+  insightsWorker=worker;
+  return worker;
+};
 
-  const generated=result?.[0]?.generated_text;
-  const text=Array.isArray(generated)?generated.at(-1)?.content:generated;
-  if(typeof text!=='string'||!text.trim())throw new Error('The model returned an empty summary.');
-  return text.trim();
+export function generateInsights(data,onProgress,onText){
+  const worker=getInsightsWorker();
+  const id=++nextRequestId;
+
+  return new Promise((resolve,reject)=>{
+    pendingRequests.set(id,{resolve,reject,onProgress,onText});
+    try{
+      worker.postMessage({id,data});
+    }catch(error){
+      pendingRequests.delete(id);
+      reject(error);
+    }
+  });
 }
