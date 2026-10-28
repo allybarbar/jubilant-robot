@@ -7,8 +7,9 @@ import Weights from './components/Weights.jsx';
 import Yoga from './components/Yoga.jsx';
 import Journal from './components/Journal.jsx';
 import BodyStats from './components/BodyStats.jsx';
+import Insights from './components/Insights.jsx';
 
-const TABS=[['breath','Breathing'],['cold','Cold shower'],['hiit','HIIT'],['weights','Weights'],['yoga','Yoga'],['journal','Journal'],['body','Body stats']];
+const TABS=[['breath','Breathing'],['cold','Cold shower'],['hiit','HIIT'],['weights','Weights'],['yoga','Yoga'],['journal','Journal'],['body','Body stats'],['insights','AI insights']];
 const INTRO={
   breath:'Power breaths, an exhale hold, then a recovery breath.',
   cold:'Time your cold shower, with a short countdown to get in.',
@@ -16,7 +17,8 @@ const INTRO={
   weights:'Log your lifts and see how you progress.',
   yoga:'A guided 30 minute session: warm-up, poses and relaxation.',
   journal:'Three short questions to close out your day.',
-  body:'Record your weight, height, waist and blood pressure.'
+  body:'Record your weight, height, waist and blood pressure.',
+  insights:'A private, on-device AI summary of your recent activity.'
 };
 
 export default function App(){
@@ -41,6 +43,7 @@ export default function App(){
       {mode==='yoga'&&<Yoga onBusy={setBusy}/>} 
       {mode==='journal'&&<Journal/>}
       {mode==='body'&&<BodyStats/>}
+      {mode==='insights'&&<Insights/>}
     </div>
   );
 }

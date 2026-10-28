@@ -43,6 +43,12 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 .x{background:none;color:var(--mute);padding:0 4px;font-size:22px;line-height:1;border-radius:6px}
 .restbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:2;display:flex;justify-content:space-between;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
 .hrow{display:flex;justify-content:space-between;width:100%;background:none;color:var(--ink);border-radius:0;border-top:1px solid var(--line);padding:12px 0;font:600 14px Manrope,sans-serif;text-align:left}
+.insights-private{justify-content:flex-start;gap:10px;align-items:flex-start}
+.insights-private input{margin:3px 0 0;accent-color:var(--orb)}
+.insights-summary p{white-space:pre-wrap;color:var(--ink)}
+.insights-error{color:#a63131}
+.bar .indeterminate{width:35%;animation:insights-progress 1.4s ease-in-out infinite alternate}
+@keyframes insights-progress{from{transform:translateX(0)}to{transform:translateX(185%)}}
 @media (prefers-reduced-motion:reduce){.orb{transition:none;animation:none}}
 .bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;width:100%}
 .bar>div{height:100%;background:var(--orb);transition:width .3s linear}
