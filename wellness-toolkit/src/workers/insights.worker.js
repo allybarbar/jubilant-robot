@@ -30,14 +30,14 @@ async function generate({id,data}){
     const result=await generator([
       {
         role:'system',
-        content:'You are a careful wellness reflection assistant. Summarize only patterns supported by the supplied personal activity data. Do not diagnose, assess medical risk, or recommend treatment. Do not invent missing information. Be warm, concise, and specific. Mention when there is too little data to identify a trend.'
+        content:'Briefly summarize only patterns supported by the data. Ignore empty sections. Do not diagnose or recommend treatment.'
       },
       {
         role:'user',
-        content:`Write a short summary with 2-4 useful observations and one gentle reflection question. The data is private and is being processed locally in this browser:\n${JSON.stringify(data)}`
+        content:`Give at most 2 very concise observations from this data:\n${JSON.stringify(data)}`
       }
     ],{
-      max_new_tokens:180,
+      max_new_tokens:80,
       do_sample:false,
       streamer:new TextStreamer(generator.tokenizer,{
         skip_prompt:true,

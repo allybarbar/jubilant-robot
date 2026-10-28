@@ -71,6 +71,10 @@ export function collectInsightsData(includePrivate){
     }));
   }
 
+  for(const key of Object.keys(data)){
+    if(Array.isArray(data[key])&&!data[key].length)delete data[key];
+  }
+
   return data;
 }
 
