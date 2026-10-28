@@ -6,15 +6,17 @@ import Hiit from './components/Hiit';
 import Weights from './components/Weights';
 import Yoga from './components/Yoga';
 import Journal from './components/Journal';
+import BodyStats from './components/BodyStats';
 
-const TABS=[['breath','Breathing'],['cold','Cold shower'],['hiit','HIIT'],['weights','Weights'],['yoga','Yoga'],['journal','Journal']];
+const TABS=[['breath','Breathing'],['cold','Cold shower'],['hiit','HIIT'],['weights','Weights'],['yoga','Yoga'],['journal','Journal'],['body','Body stats']];
 const INTRO={
   breath:'Power breaths, an exhale hold, then a recovery breath.',
   cold:'Time your cold shower, with a short countdown to get in.',
   hiit:'Work and rest intervals with voice cues.',
   weights:'Log your lifts and see how you progress.',
   yoga:'A guided 30 minute session: warm-up, poses and relaxation.',
-  journal:'Three short questions to close out your day.'
+  journal:'Three short questions to close out your day.',
+  body:'Record your weight, height, waist and blood pressure.'
 };
 
 export default function App(){
@@ -38,6 +40,7 @@ export default function App(){
       {mode==='weights'&&<Weights onBusy={setBusy}/>} 
       {mode==='yoga'&&<Yoga onBusy={setBusy}/>} 
       {mode==='journal'&&<Journal/>}
+      {mode==='body'&&<BodyStats/>}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 # Wellness Toolkit
 
-A single-page React app with six tools: guided breathing (power and rapid), a cold shower timer, a HIIT interval timer with animated stick-figure exercises, a weights tracker, and a guided 30 minute yoga session (5 minute warm-up, 20 minutes of shuffled poses, 5 minute relaxation) with animated stick figures, and a three-question daily journal. Voice guidance and ocean waves use the browser's built-in speech and Web Audio. Settings and logs are saved in `localStorage` (per browser, per device).
+A single-page React app with eight tools: guided breathing (power and rapid), a cold shower timer, a HIIT interval timer with animated stick-figure exercises, a weights tracker, a guided 30 minute yoga session (5 minute warm-up, 20 minutes of shuffled poses, 5 minute relaxation) with animated stick figures, a three-question daily journal, and a body-stats tracker for weight, height, waist, and blood pressure. Voice guidance and ocean waves use the browser's built-in speech and Web Audio. Settings and logs are saved in `localStorage` (per browser, per device).
 
 Breath-hold practice is not safe in or near water, while driving or standing. Check with a doctor first if you have a heart condition, epilepsy, high blood pressure or are pregnant.
 
@@ -35,7 +35,7 @@ Host `dist/` somewhere, then add a Code block (HTML mode, Display Source off):
 ```
 src/
   App.jsx               tab shell
-  components/           Breathing, Cold, Hiit, Stick, Weights, Yoga, Journal
+  components/           Breathing, Cold, Hiit, Stick, Weights, Yoga, Journal, BodyStats
   data/                 exercises, stick-figure animations, weight splits, yoga poses
   lib/                  audio (waves + speech), storage helpers
   styles.css

@@ -48,3 +48,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 .bar>div{height:100%;background:var(--orb);transition:width .3s linear}
 .ta{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:400 15px/1.4 Manrope,sans-serif;resize:none}
 textarea:focus-visible{outline:3px solid var(--orb);outline-offset:2px}
+.body-measures{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.body-measures label{display:flex;flex-direction:column;gap:6px;color:var(--mute);font-size:13px}
+.body-entry{display:flex;flex-direction:column;gap:8px;padding:0 0 10px}
+.body-entry b{color:var(--ink)}
