@@ -1,6 +1,6 @@
 import {useState,useEffect,useRef} from 'react';
-import {SAVE,fmt} from '../lib/storage';
-import {audio,say,testVoice} from '../lib/audio';
+import {SAVE,fmt} from '../lib/storage.js';
+import {audio,say,testVoice} from '../lib/audio.js';
 
 const loadCold=()=>{try{return JSON.parse(localStorage.getItem('bw_cold_log')||'[]')}catch(e){return[]}};
 export default function Cold({onBusy}){
@@ -82,4 +82,3 @@ export default function Cold({onBusy}){
     )}
   </>);
 }
-

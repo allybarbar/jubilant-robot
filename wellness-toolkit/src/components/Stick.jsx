@@ -1,6 +1,6 @@
 import {useEffect,useRef} from 'react';
-import {ANIM,frame,lerp,lerpA} from '../data/anim';
-import {YANIM} from '../data/yoga';
+import {ANIM,frame,lerp,lerpA} from '../data/anim.js';
+import {YANIM} from '../data/yoga.js';
 
 export default function Stick({name,dim,paused,flip}){
   const ref=useRef(null);

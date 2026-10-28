@@ -1,5 +1,5 @@
 import {useEffect,useState} from 'react';
-import {PREF,SAVE} from '../lib/storage';
+import {PREF,SAVE} from '../lib/storage.js';
 
 const todayKey=()=>{const d=new Date(),z=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate())};
 const dayLabel=k=>new Date(k+'T12:00:00').toLocaleDateString(undefined,{weekday:'short',day:'numeric',month:'short',year:'numeric'});

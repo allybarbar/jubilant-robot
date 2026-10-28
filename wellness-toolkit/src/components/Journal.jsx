@@ -1,5 +1,5 @@
 import {useState,useEffect} from 'react';
-import {PREF,SAVE} from '../lib/storage';
+import {PREF,SAVE} from '../lib/storage.js';
 
 const JQ=[['a','What did you achieve today?','Even something small counts.'],['g','What are you grateful for?','A person, a moment, anything.'],['h','What are your hopes for tomorrow?','One thing you are looking forward to.']];
 const dayKey=(d=new Date())=>{const z=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate())};

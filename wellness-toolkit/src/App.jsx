@@ -1,12 +1,12 @@
 import {useState,useEffect} from 'react';
-import {PREF,SAVE} from './lib/storage';
-import Breathing from './components/Breathing';
-import Cold from './components/Cold';
-import Hiit from './components/Hiit';
-import Weights from './components/Weights';
-import Yoga from './components/Yoga';
-import Journal from './components/Journal';
-import BodyStats from './components/BodyStats';
+import {PREF,SAVE} from './lib/storage.js';
+import Breathing from './components/Breathing.jsx';
+import Cold from './components/Cold.jsx';
+import Hiit from './components/Hiit.jsx';
+import Weights from './components/Weights.jsx';
+import Yoga from './components/Yoga.jsx';
+import Journal from './components/Journal.jsx';
+import BodyStats from './components/BodyStats.jsx';
 
 const TABS=[['breath','Breathing'],['cold','Cold shower'],['hiit','HIIT'],['weights','Weights'],['yoga','Yoga'],['journal','Journal'],['body','Body stats']];
 const INTRO={

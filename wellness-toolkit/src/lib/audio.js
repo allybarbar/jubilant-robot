@@ -1,4 +1,4 @@
-import {PREF} from './storage';
+import {PREF} from './storage.js';
 export const audio={waves:PREF('bw_waves',true),voice:PREF('bw_voice',true)};
 let AC=null,WAVE=null;
 export const initAudio=()=>{try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume()}catch(e){};

@@ -1,8 +1,8 @@
 import {useState,useEffect,useRef} from 'react';
-import {SAVE,fmt} from '../lib/storage';
-import {audio,say,testVoice} from '../lib/audio';
-import {EX,EXN,ORDN,ALLDESC,pick} from '../data/exercises';
-import Stick from './Stick';
+import {SAVE,fmt} from '../lib/storage.js';
+import {audio,say,testVoice} from '../lib/audio.js';
+import {EX,EXN,ORDN,ALLDESC,pick} from '../data/exercises.js';
+import Stick from './Stick.jsx';
 
 const loadHiit=()=>{try{return JSON.parse(localStorage.getItem('bw_hiit_log')||'[]')}catch(e){return[]}};
 const loadHcfg=()=>{const d={work:30,rest:15,rounds:8,ex:'off',ord:'blocks'};try{const c={...d,...JSON.parse(localStorage.getItem('bw_hiit')||'{}')};if(c.ex==='mix'){c.ex='all';c.ord='alt'}return c}catch(e){return d}};
@@ -108,4 +108,3 @@ export default function Hiit({onBusy}){
     )}
   </>);
 }
-

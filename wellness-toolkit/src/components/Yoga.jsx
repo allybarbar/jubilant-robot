@@ -1,9 +1,9 @@
 import {useState,useEffect,useRef} from 'react';
-import {PREF,SAVE,fmt} from '../lib/storage';
-import {audio,say,testVoice} from '../lib/audio';
-import {shuf} from '../data/exercises';
-import {YH,WARM,RELAX,Y_POOL} from '../data/yoga';
-import Stick from './Stick';
+import {PREF,SAVE,fmt} from '../lib/storage.js';
+import {audio,say,testVoice} from '../lib/audio.js';
+import {shuf} from '../data/exercises.js';
+import {YH,WARM,RELAX,Y_POOL} from '../data/yoga.js';
+import Stick from './Stick.jsx';
 
 const buildYoga=()=>{
   const a=[];
@@ -73,6 +73,8 @@ export default function Yoga({onBusy}){
         <div className="set"><span>Total</span><b>30:00</b></div>
         <label className="set">Voice guidance<input type="checkbox" checked={voice} onChange={toggleVoice}/></label>
         <div className="set"><span>Not hearing it? Check your media volume.</span><button className="ghost" style={{padding:'8px 16px'}} onClick={testVoice}>Test voice</button></div>
+        <label className="set">Voice guidance<input type="checkbox" checked={voice} onChange={toggleVoice}/></label>
+        <div className="set"><span>Not hearing it? Check your media volume.</span><button className="ghost" style={{padding:'8px 16px'}} onClick={testVoice}>Test voice</button></div>
       </div>
       <div className="row"><button onClick={start}>Start session</button></div>
       <p className="warn">The main practice shuffles a different order of poses each time. Move gently, never force a stretch, and stop if you feel pain or dizziness. Check with a doctor first if you are pregnant, injured or have a medical condition.</p>
@@ -113,4 +115,3 @@ export default function Yoga({onBusy}){
     )}
   </>);
 }
-

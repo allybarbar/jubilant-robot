@@ -1,7 +1,7 @@
 import {useState,useEffect,useRef} from 'react';
-import {PREF,SAVE,fmt} from '../lib/storage';
-import {audio,say,VOICE_OK} from '../lib/audio';
-import {SPLITS,WEX,lastFor,bestFor,nSets,mkSets} from '../data/weights';
+import {PREF,SAVE,fmt} from '../lib/storage.js';
+import {audio,say,VOICE_OK} from '../lib/audio.js';
+import {SPLITS,WEX,lastFor,bestFor,nSets,mkSets} from '../data/weights.js';
 
 export default function Weights({onBusy}){
   const [log,setLog]=useState(()=>PREF('bw_w_log',[]));
@@ -108,4 +108,3 @@ export default function Weights({onBusy}){
     </div>
   </>);
 }
-

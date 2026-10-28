@@ -1,6 +1,6 @@
 import {useState,useEffect,useRef} from 'react';
-import {PREF,SAVE,fmt} from '../lib/storage';
-import {audio,initAudio,startWave,stopWave,wave,say,testVoice,stopAll} from '../lib/audio';
+import {PREF,SAVE,fmt} from '../lib/storage.js';
+import {audio,initAudio,startWave,stopWave,wave,say,testVoice,stopAll} from '../lib/audio.js';
 
 const load=()=>{try{return JSON.parse(localStorage.getItem('bw_hist')||'[]')}catch(e){return[]}};
 const save=h=>{try{localStorage.setItem('bw_hist',JSON.stringify(h))}catch(e){}};
