@@ -22,7 +22,7 @@ async function getGenerator(id){
   }
 }
 
-async function generate({id,data}){
+async function generate({id,summary}){
   try{
     const generator=await getGenerator(id);
     const {TextStreamer}=await import('@huggingface/transformers');
@@ -30,14 +30,14 @@ async function generate({id,data}){
     const result=await generator([
       {
         role:'system',
-        content:'You are a data analyst. Analyze only the records provided. Never describe an app, tool, feature, or how the records were collected. Do not invent facts or infer anything the records cannot support. Do not diagnose or give medical advice.'
+        content:'Narrate only the computed data summary. Do not describe an app or infer unsupported trends. Do not diagnose or give medical advice. Write at most 2 short bullets, each with a concrete number.'
       },
       {
         role:'user',
-        content:`Find up to 2 useful observations in these wellness records. Focus on recorded activity, such as frequency, changes over dates, durations, completed sessions, or exercise weights and reps. Each observation must cite concrete evidence from the records (an activity and a count, value, date, or comparison). Avoid generic encouragement. If no meaningful pattern is supported, say so plainly. Output bullet points only.\n\nRecords:\n${JSON.stringify(data)}`
+        content:`Narrate the most useful facts in this summary. Use this exact style:\n- Cold shower: 4 sessions across 3 days, averaging 72 seconds.\n- Yoga: 3 of 4 sessions completed.\nUse only values present in the summary; omit unavailable details. If it has too little information for an observation, say that briefly.\n\nSummary: ${JSON.stringify(summary)}`
       }
     ],{
-      max_new_tokens:120,
+      max_new_tokens:64,
       do_sample:false,
       streamer:new TextStreamer(generator.tokenizer,{
         skip_prompt:true,
