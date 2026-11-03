@@ -53,7 +53,7 @@ export function collectInsightsData(includePrivate){
       sets:Array.isArray(ex.sets)?ex.sets.map(set=>({weight:set.w,reps:set.r})):[]
     })):[]
   }));
-  const data={period:'Last 30 days',breathing,cold,hiit,yoga,weights};
+  const data={period:'Last 30 days',periodStart:cutoff,breathing,cold,hiit,yoga,weights};
 
   if(includePrivate){
     data.journal=recent(readLog('bw_j_log'),cutoff,today).slice(0,10).map(entry=>({
@@ -100,6 +100,40 @@ const average=values=>values.length
 
 const activityDays=entries=>new Set(entries.map(entry=>entry.date).filter(Boolean)).size;
 
+const activityPattern=(entries,periodStart)=>{
+  const start=Date.parse(`${periodStart}T00:00:00Z`);
+  const datedEntries=entries.filter(entry=>entry.date);
+  return {
+    sessions:entries.length,
+    activeDays:activityDays(entries),
+    activeWeeks:new Set(datedEntries.map(entry=>Math.floor(
+      (Date.parse(`${entry.date}T00:00:00Z`)-start)/(7*24*60*60*1000)
+    ))).size,
+    weeksInPeriod:5
+  };
+};
+
+const halfPeriodTrend=(entries,valueOf,periodStart)=>{
+  const start=Date.parse(`${periodStart}T00:00:00Z`);
+  const firstHalf=[];
+  const secondHalf=[];
+  for(const entry of entries){
+    if(!entry.date)continue;
+    const value=numericValue(valueOf(entry));
+    if(value===null)continue;
+    const day=(Date.parse(`${entry.date}T00:00:00Z`)-start)/(24*60*60*1000);
+    (day<15?firstHalf:secondHalf).push(value);
+  }
+  if(!firstHalf.length||!secondHalf.length)return undefined;
+  const firstHalfAverage=average(firstHalf);
+  const secondHalfAverage=average(secondHalf);
+  return {
+    firstHalfAverage,
+    secondHalfAverage,
+    change:rounded(secondHalfAverage-firstHalfAverage)
+  };
+};
+
 const measurementTrend=(entries,key,unitKey,fallbackUnit='')=>{
   const values=entries
     .map(entry=>({date:entry.date,value:numericValue(entry[key]),unit:entry[unitKey]||fallbackUnit}))
@@ -118,72 +152,98 @@ const measurementTrend=(entries,key,unitKey,fallbackUnit='')=>{
 };
 
 export function summarizeInsightsData(data){
-  const summary={period:data.period,activities:[]};
-  const addActivity=(name,entries,stats)=>{
-    if(entries?.length)summary.activities.push({
-      activity:name,
-      sessions:entries.length,
-      activeDays:activityDays(entries),
+  const allEntries=['breathing','cold','hiit','yoga','weights','journal','bodyStats']
+    .flatMap(key=>data[key]||[]);
+  const periodStart=data.periodStart||allEntries
+    .map(entry=>entry.date)
+    .filter(Boolean)
+    .sort()[0];
+  const screens=[];
+  const addScreen=(name,entries,stats)=>{
+    if(entries?.length)screens.push({
+      screen:name,
+      ...activityPattern(entries,periodStart),
       ...stats
     });
   };
 
-  const breathingHolds=(data.breathing||[]).flatMap(entry=>entry.holdSeconds||[])
-    .map(numericValue).filter(value=>value!==null);
-  addActivity('Breathing',data.breathing,{
-    averageHoldSeconds:average(breathingHolds),
-    longestHoldSeconds:breathingHolds.length?Math.max(...breathingHolds):undefined
+  const breathing=data.breathing||[];
+  const breathingSessions=breathing.map(entry=>({
+    ...entry,
+    averageHoldSeconds:average((entry.holdSeconds||[]).map(numericValue).filter(value=>value!==null))
+  }));
+  addScreen('Breathing',breathing,{
+    averageHoldSeconds:average(breathingSessions.map(entry=>entry.averageHoldSeconds).filter(value=>value!==undefined)),
+    holdTrend:halfPeriodTrend(breathingSessions,entry=>entry.averageHoldSeconds,periodStart)
   });
 
-  const coldDurations=(data.cold||[]).map(entry=>numericValue(entry.durationSeconds))
-    .filter(value=>value!==null);
-  addActivity('Cold shower',data.cold,{
-    averageDurationSeconds:average(coldDurations),
-    longestDurationSeconds:coldDurations.length?Math.max(...coldDurations):undefined
+  const cold=data.cold||[];
+  addScreen('Cold shower',cold,{
+    averageDurationSeconds:average(cold.map(entry=>numericValue(entry.durationSeconds)).filter(value=>value!==null)),
+    durationTrend:halfPeriodTrend(cold,entry=>entry.durationSeconds,periodStart)
   });
 
-  const hiit=(data.hiit||[]);
-  addActivity('HIIT',hiit,{
+  const hiit=data.hiit||[];
+  addScreen('HIIT',hiit,{
     averageRounds:average(hiit.map(entry=>numericValue(entry.rounds)).filter(value=>value!==null)),
     averageWorkSeconds:average(hiit.map(entry=>numericValue(entry.workSeconds)).filter(value=>value!==null)),
-    averageRestSeconds:average(hiit.map(entry=>numericValue(entry.restSeconds)).filter(value=>value!==null))
+    averageRestSeconds:average(hiit.map(entry=>numericValue(entry.restSeconds)).filter(value=>value!==null)),
+    roundsTrend:halfPeriodTrend(hiit,entry=>entry.rounds,periodStart)
   });
 
   const yoga=data.yoga||[];
-  addActivity('Yoga',yoga,{
+  addScreen('Yoga',yoga,{
     completedSessions:yoga.filter(entry=>entry.completed).length,
-    averageDurationSeconds:average(yoga.map(entry=>numericValue(entry.durationSeconds)).filter(value=>value!==null))
+    averageDurationSeconds:average(yoga.map(entry=>numericValue(entry.durationSeconds)).filter(value=>value!==null)),
+    completionTrend:halfPeriodTrend(yoga,entry=>entry.completed?1:0,periodStart),
+    durationTrend:halfPeriodTrend(yoga,entry=>entry.durationSeconds,periodStart)
   });
 
+  const weightWorkouts=data.weights||[];
   const exerciseStats=new Map();
   let loggedSets=0;
-  for(const workout of data.weights||[]){
+  for(const workout of weightWorkouts){
     for(const exercise of workout.exercises||[]){
       if(!exercise.sets?.length)continue;
       const key=`${exercise.name}\u0000${workout.unit||''}`;
-      const stats=exerciseStats.get(key)||{exercise:exercise.name,unit:workout.unit||'',sets:0};
+      const stats=exerciseStats.get(key)||{
+        exercise:exercise.name,
+        unit:workout.unit||'',
+        sets:0,
+        sessions:[]
+      };
+      const sessionWeights=[];
+      const sessionReps=[];
       for(const set of exercise.sets||[]){
         const weight=numericValue(set.weight);
         const reps=numericValue(set.reps);
         stats.sets++;
         loggedSets++;
-        if(weight!==null&&(!stats.bestSet||weight>stats.bestSet.weight)){
-          stats.bestSet={weight,reps};
-        }
+        if(weight!==null)sessionWeights.push(weight);
+        if(reps!==null)sessionReps.push(reps);
       }
+      stats.sessions.push({
+        date:workout.date,
+        averageWeight:average(sessionWeights),
+        averageReps:average(sessionReps)
+      });
       exerciseStats.set(key,stats);
     }
   }
-  const weights=data.weights||[];
-  addActivity('Weights',weights,{
+  addScreen('Weights',weightWorkouts,{
     loggedSets,
     exercises:[...exerciseStats.values()]
       .sort((a,b)=>b.sets-a.sets)
       .slice(0,5)
+      .map(({sessions,...exercise})=>({
+        ...exercise,
+        weightTrend:halfPeriodTrend(sessions,entry=>entry.averageWeight,periodStart),
+        repsTrend:halfPeriodTrend(sessions,entry=>entry.averageReps,periodStart)
+      }))
   });
 
   if(data.journal?.length){
-    summary.journalEntries={entries:data.journal.length,activeDays:activityDays(data.journal)};
+    addScreen('Journal',data.journal,{});
   }
 
   const bodyStats=data.bodyStats||[];
@@ -199,10 +259,10 @@ export function summarizeInsightsData(data){
     for(const key of Object.keys(measurements)){
       if(measurements[key]===undefined)delete measurements[key];
     }
-    summary.bodyMeasurements=measurements;
+    addScreen('Body stats',bodyStats,{measurements});
   }
 
-  return summary;
+  return {period:data.period,screens};
 }
 
 let insightsWorker;
@@ -225,8 +285,6 @@ const getInsightsWorker=()=>{
 
     if(type==='progress'){
       request.onProgress?.(progress);
-    }else if(type==='text'){
-      request.onText?.(text);
     }else if(type==='done'){
       pendingRequests.delete(id);
       request.resolve(text);
@@ -252,13 +310,13 @@ const getInsightsWorker=()=>{
   return worker;
 };
 
-export function generateInsights(data,onProgress,onText){
+export function generateInsights(data,onProgress){
   const worker=getInsightsWorker();
   const id=++nextRequestId;
   const summary=summarizeInsightsData(data);
 
   return new Promise((resolve,reject)=>{
-    pendingRequests.set(id,{resolve,reject,onProgress,onText});
+    pendingRequests.set(id,{resolve,reject,onProgress});
     try{
       worker.postMessage({id,summary});
     }catch(error){

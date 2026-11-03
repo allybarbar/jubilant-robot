@@ -2,7 +2,7 @@
 
 A single-page React app with wellness timers and trackers, a daily journal, body stats, and AI insights. Voice guidance and ocean waves use the browser's built-in speech and Web Audio. Settings and logs are saved in `localStorage` (per browser, per device).
 
-AI insights run entirely in the browser using a quantized open model. The first summary downloads model files from Hugging Face (several hundred MB); the browser can cache them for later use. No user logs are sent to a server. Journal answers and body measurements are excluded unless the user opts in.
+AI insights run entirely in the browser using a quantized open model. Summaries are generated separately for screens with data, highlighting activity frequency and available early-to-late changes. The first summary downloads model files from Hugging Face (several hundred MB); the browser can cache them for later use. No user logs are sent to a server. Journal answers and body measurements are excluded unless the user opts in.
 
 Breath-hold practice is not safe in or near water, while driving or standing. Check with a doctor first if you have a heart condition, epilepsy, high blood pressure or are pregnant.
 

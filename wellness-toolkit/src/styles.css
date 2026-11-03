@@ -1,12 +1,13 @@
-:root{--bg:#eef5f7;--ink:#12303d;--mute:#5d7a86;--orb:#3aa8bd;--orb2:#a9e0ea;--hold:#c9822b;--card:#ffffff;--line:#cfe0e6;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1c26;--ink:#e3f2f6;--mute:#8aa9b5;--orb:#4fc3d8;--orb2:#16505e;--hold:#f2b46b;--card:#12303d;--line:#1f4352}}
-:root[data-theme="dark"]{--bg:#0b1c26;--ink:#e3f2f6;--mute:#8aa9b5;--orb:#4fc3d8;--orb2:#16505e;--hold:#f2b46b;--card:#12303d;--line:#1f4352}
+:root{--bg:#e9f4e8;--ink:#173b43;--mute:#3f6265;--orb:#35b9ad;--orb2:#b2e8c9;--hold:#d98255;--card:#fffaf0;--line:#c9ded1;--wallpaper-tint:rgba(235,246,226,.88);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#102a35;--ink:#e5f2d9;--mute:#b8d2c8;--orb:#56d2bd;--orb2:#246c68;--hold:#f2b46b;--card:#173a43;--line:#31565a;--wallpaper-tint:rgba(16,42,53,.88)}}
+:root[data-theme="dark"]{--bg:#102a35;--ink:#e5f2d9;--mute:#b8d2c8;--orb:#56d2bd;--orb2:#246c68;--hold:#f2b46b;--card:#173a43;--line:#31565a;--wallpaper-tint:rgba(16,42,53,.88)}
 *{box-sizing:border-box}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:Manrope,system-ui,sans-serif;min-height:100vh}
+body{position:relative;isolation:isolate;margin:0;background:transparent;color:var(--ink);font-family:Manrope,system-ui,sans-serif;min-height:100vh}
+body::before{content:"";position:fixed;inset:0;z-index:-1;background:linear-gradient(var(--wallpaper-tint),var(--wallpaper-tint)),url('./assets/wellness-toolkit-background.jpg') center/cover no-repeat}
 .app{max-width:440px;margin:0 auto;padding:20px 20px 40px;display:flex;flex-direction:column;gap:20px;min-height:100vh}
-h1{font:300 28px/1.1 Fraunces,Georgia,serif;margin:8px 0 0}
-p{margin:0;color:var(--mute);line-height:1.5;font-size:14px}
+h1{font:500 30px/1.1 Fraunces,Georgia,serif;margin:8px 0 0;color:var(--ink);text-shadow:0 1px 0 var(--card)}
+p{margin:0;color:var(--mute);line-height:1.55;font-size:15px;font-weight:600}
 .stage{display:flex;flex-direction:column;align-items:center;gap:18px;padding:12px 0}
 .orbwrap{width:min(78vw,300px);aspect-ratio:1;display:grid;place-items:center}
 .orb{width:62%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--orb2),var(--orb));display:grid;place-items:center;transition:transform var(--d,1.7s) ease-in-out;animation:beat 4s ease-in-out infinite alternate}
@@ -18,7 +19,7 @@ p{margin:0;color:var(--mute);line-height:1.5;font-size:14px}
 button{font:600 15px Manrope,sans-serif;border:0;border-radius:999px;padding:14px 26px;background:var(--ink);color:var(--bg);cursor:pointer}
 button.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
 button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--orb);outline-offset:2px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:14px;box-shadow:0 3px 14px rgba(23,59,67,.08)}
 .set{display:flex;justify-content:space-between;align-items:center;font-size:14px}
 .set input[type=range]{width:55%;accent-color:var(--orb)}
 .hist{display:flex;justify-content:space-between;font-size:14px;border-top:1px solid var(--line);padding-top:10px}

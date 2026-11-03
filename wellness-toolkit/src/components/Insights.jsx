@@ -23,9 +23,11 @@ export default function Insights(){
         }else if(progress.status==='done'){
           setStatus('Model ready. Generating your summary on this device…');
         }else if(progress.status==='generating'){
-          setStatus('Generating your summary on this device…');
+          const section=progress.screen?` ${progress.screen} insights`: ' your summary';
+          const count=progress.current&&progress.total?` (${progress.current} of ${progress.total})`:'';
+          setStatus(`Generating${section}${count} on this device…`);
         }
-      },text=>setSummary(current=>current+text));
+      });
       setSummary(result);
       setStatus('Summary generated on this device.');
     }catch(cause){
