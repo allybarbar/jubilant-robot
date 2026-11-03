@@ -42,19 +42,17 @@ export default function App(){
       setMode(pendingModeRef.current);
       setFadingOut(false);
       transitionTimeout.current=null;
-    },180);
+    },300);
   }
 
   return (
     <div className="app">
-      <div>
-        <div className={'tab-content'+(fadingOut?' fading-out':'')}>
-          <p>{INTRO[mode]}</p>
-        </div>
-      </div>
       {!busy&&(<div className="row">
         {TABS.map(([k,l])=>(<button key={k} className={'tab'+(mode===k?' on':'')} onClick={()=>selectMode(k)}>{l}</button>))}
       </div>)}
+      <div className={'tab-content'+(fadingOut?' fading-out':'')}>
+        <p>{INTRO[mode]}</p>
+      </div>
       <div className={'tab-content'+(fadingOut?' fading-out':'')}>
         {mode==='breath'&&<Breathing onBusy={setBusy} onCold={()=>selectMode('cold')}/>}
         {mode==='cold'&&<Cold onBusy={setBusy}/>}

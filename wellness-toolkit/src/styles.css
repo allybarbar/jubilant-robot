@@ -8,7 +8,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;background:linear-grad
 .app{max-width:440px;margin:0 auto;padding:20px 20px 40px;display:flex;flex-direction:column;gap:20px;min-height:100vh}
 h1{font:500 30px/1.1 Fraunces,Georgia,serif;margin:8px 0 0;color:var(--ink);text-shadow:0 1px 0 var(--card)}
 p{margin:0;color:var(--mute);line-height:1.55;font-size:15px;font-weight:600}
-.tab-content{transition:opacity .18s ease-in-out}
+.tab-content{transition:opacity .3s ease-in-out}
 .tab-content.fading-out{opacity:0}
 .stage{display:flex;flex-direction:column;align-items:center;gap:18px;padding:12px 0}
 .orbwrap{width:min(78vw,300px);aspect-ratio:1;display:grid;place-items:center}
