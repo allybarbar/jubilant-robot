@@ -1,4 +1,4 @@
-import {useState,useEffect} from 'react';
+import {useState,useEffect,useRef} from 'react';
 import {PREF,SAVE} from './lib/storage.js';
 import Breathing from './components/Breathing.jsx';
 import Cold from './components/Cold.jsx';
@@ -24,26 +24,47 @@ const INTRO={
 export default function App(){
   const [mode,setMode]=useState(()=>PREF('bw_mode','breath'));
   const [busy,setBusy]=useState(false);
+  const [fadingOut,setFadingOut]=useState(false);
+  const modeRef=useRef(mode);
+  const pendingModeRef=useRef(mode);
+  const transitionTimeout=useRef(null);
 
   useEffect(()=>{SAVE('bw_mode',mode)},[mode]);
+  useEffect(()=>()=>clearTimeout(transitionTimeout.current),[]);
+
+  function selectMode(nextMode){
+    if(modeRef.current===nextMode&&!fadingOut)return;
+    clearTimeout(transitionTimeout.current);
+    pendingModeRef.current=nextMode;
+    setFadingOut(true);
+    transitionTimeout.current=setTimeout(()=>{
+      modeRef.current=pendingModeRef.current;
+      setMode(pendingModeRef.current);
+      setFadingOut(false);
+      transitionTimeout.current=null;
+    },180);
+  }
 
   return (
     <div className="app">
       <div>
-        <h1>Wellness Toolkit</h1>
-        <p>{INTRO[mode]}</p>
+        <div className={'tab-content'+(fadingOut?' fading-out':'')}>
+          <p>{INTRO[mode]}</p>
+        </div>
       </div>
       {!busy&&(<div className="row">
-        {TABS.map(([k,l])=>(<button key={k} className={'tab'+(mode===k?' on':'')} onClick={()=>setMode(k)}>{l}</button>))}
+        {TABS.map(([k,l])=>(<button key={k} className={'tab'+(mode===k?' on':'')} onClick={()=>selectMode(k)}>{l}</button>))}
       </div>)}
-      {mode==='breath'&&<Breathing onBusy={setBusy} onCold={()=>setMode('cold')}/>} 
-      {mode==='cold'&&<Cold onBusy={setBusy}/>} 
-      {mode==='hiit'&&<Hiit onBusy={setBusy}/>} 
-      {mode==='weights'&&<Weights onBusy={setBusy}/>} 
-      {mode==='yoga'&&<Yoga onBusy={setBusy}/>} 
-      {mode==='journal'&&<Journal/>}
-      {mode==='body'&&<BodyStats/>}
-      {mode==='insights'&&<Insights/>}
+      <div className={'tab-content'+(fadingOut?' fading-out':'')}>
+        {mode==='breath'&&<Breathing onBusy={setBusy} onCold={()=>selectMode('cold')}/>}
+        {mode==='cold'&&<Cold onBusy={setBusy}/>}
+        {mode==='hiit'&&<Hiit onBusy={setBusy}/>}
+        {mode==='weights'&&<Weights onBusy={setBusy}/>}
+        {mode==='yoga'&&<Yoga onBusy={setBusy}/>}
+        {mode==='journal'&&<Journal/>}
+        {mode==='body'&&<BodyStats/>}
+        {mode==='insights'&&<Insights/>}
+      </div>
     </div>
   );
 }

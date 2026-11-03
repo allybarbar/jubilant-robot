@@ -8,6 +8,8 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;background:linear-grad
 .app{max-width:440px;margin:0 auto;padding:20px 20px 40px;display:flex;flex-direction:column;gap:20px;min-height:100vh}
 h1{font:500 30px/1.1 Fraunces,Georgia,serif;margin:8px 0 0;color:var(--ink);text-shadow:0 1px 0 var(--card)}
 p{margin:0;color:var(--mute);line-height:1.55;font-size:15px;font-weight:600}
+.tab-content{transition:opacity .18s ease-in-out}
+.tab-content.fading-out{opacity:0}
 .stage{display:flex;flex-direction:column;align-items:center;gap:18px;padding:12px 0}
 .orbwrap{width:min(78vw,300px);aspect-ratio:1;display:grid;place-items:center}
 .orb{width:62%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--orb2),var(--orb));display:grid;place-items:center;transition:transform var(--d,1.7s) ease-in-out;animation:beat 4s ease-in-out infinite alternate}
@@ -50,7 +52,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 .insights-error{color:#a63131}
 .bar .indeterminate{width:35%;animation:insights-progress 1.4s ease-in-out infinite alternate}
 @keyframes insights-progress{from{transform:translateX(0)}to{transform:translateX(185%)}}
-@media (prefers-reduced-motion:reduce){.orb{transition:none;animation:none}}
+@media (prefers-reduced-motion:reduce){.orb,.tab-content{transition:none}.orb{animation:none}}
 .bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;width:100%}
 .bar>div{height:100%;background:var(--orb);transition:width .3s linear}
 .ta{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:400 15px/1.4 Manrope,sans-serif;resize:none}
