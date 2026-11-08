@@ -8,8 +8,9 @@ import Yoga from './components/Yoga.jsx';
 import Journal from './components/Journal.jsx';
 import BodyStats from './components/BodyStats.jsx';
 import Insights from './components/Insights.jsx';
+import The75 from './components/The75.jsx';
 
-const TABS=[['breath','Breathing'],['cold','Cold shower'],['hiit','HIIT'],['weights','Weights'],['yoga','Yoga'],['journal','Journal'],['body','Body stats'],['insights','AI insights']];
+const TABS=[['breath','Breathing'],['cold','Cold shower'],['hiit','HIIT'],['weights','Weights'],['yoga','Yoga'],['journal','Journal'],['body','Body stats'],['insights','AI insights'],['challenge','The 75']];
 const INTRO={
   breath:'Power breaths, an exhale hold, then a recovery breath.',
   cold:'Time your cold shower, with a short countdown to get in.',
@@ -18,7 +19,8 @@ const INTRO={
   yoga:'A guided 30 minute session: warm-up, poses and relaxation.',
   journal:'Three short questions to close out your day.',
   body:'Record your weight, height, waist and blood pressure.',
-  insights:'Private, on-device insights based on your recent activity data.'
+  insights:'Private, on-device insights based on your recent activity data.',
+  challenge:'A configurable 75-day challenge with daily tasks and progress history.'
 };
 
 export default function App(){
@@ -46,7 +48,7 @@ export default function App(){
   }
 
   return (
-    <div className="app">
+    <div className={'app'+(mode==='challenge'?' challenge-app':'')}>
       {!busy&&(<div className="row">
         {TABS.map(([k,l])=>(<button key={k} className={'tab'+(mode===k?' on':'')} onClick={()=>selectMode(k)}>{l}</button>))}
       </div>)}
@@ -62,6 +64,7 @@ export default function App(){
         {mode==='journal'&&<Journal/>}
         {mode==='body'&&<BodyStats/>}
         {mode==='insights'&&<Insights/>}
+        {mode==='challenge'&&<The75/>}
       </div>
     </div>
   );
