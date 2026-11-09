@@ -29,7 +29,8 @@ export function isTaskComplete(task,value,photoRef){
   if(task.type==='checkbox')return task.requiresPhoto?Boolean(photoRef):value===true;
   if(task.type==='duration'){
     const duration=typeof value==='object'&&value!==null?Number(value.minutes??value.value):Number(value)||0;
-    return duration>=Number(task.target)&&(task.outdoorRequired?Boolean(value?.outdoor):true);
+    const workoutTypeValid=!task.requiresWorkoutType||task.workoutTypes?.includes(value?.workoutType);
+    return duration>=Number(task.target)&&(task.outdoorRequired?Boolean(value?.outdoor):true)&&workoutTypeValid;
   }
   if(task.type==='counter')return (Number(value)||0)>=Number(task.target);
   return false;

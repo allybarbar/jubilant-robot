@@ -204,10 +204,13 @@ export default function The75(){
         <button type="button" role="tab" aria-selected={view==='today'} className={view==='today'?'selected':''} onClick={()=>setView('today')}>Today</button>
         <button type="button" role="tab" aria-selected={view==='progress'} className={view==='progress'?'selected':''} onClick={()=>setView('progress')}>Progress</button>
       </div>
-      {attempt.status==='active'&&<button type="button" className="challenge-change-link" onClick={()=>setConfirmExit(true)}>End attempt and choose another challenge</button>}
+      {attempt.status==='active'&&<div className="challenge-end-prompt">
+        <span>Ready to stop this challenge?</span>
+        <button type="button" className="challenge-end-button" onClick={()=>setConfirmExit(true)}>End challenge</button>
+      </div>}
       {confirmExit&&<div className="challenge-reset" role="alertdialog" aria-labelledby="challenge-end-title">
-        <div><strong id="challenge-end-title">End this attempt?</strong><p>It will remain in your history as failed. You can then choose a different rule set.</p></div>
-        <div className="challenge-exit-actions"><button type="button" className="ghost" onClick={()=>setConfirmExit(false)}>Keep this attempt</button><button type="button" onClick={endAndChooseAnother}>End and choose another</button></div>
+        <div><strong id="challenge-end-title">End this challenge?</strong><p>Your progress will stay in attempt history, and you can start a new challenge any time.</p></div>
+        <div className="challenge-exit-actions"><button type="button" className="ghost" onClick={()=>setConfirmExit(false)}>Keep going</button><button type="button" className="challenge-end-button" onClick={endAndChooseAnother}>End challenge</button></div>
       </div>}
 
       {attempt.status==='active'&&rollover?.resetRequired&&<div className="challenge-reset" role="alert">
@@ -259,8 +262,14 @@ function TaskControl({task,value,photoUrl,onChange,onPhoto}){
     const outdoor=typeof value==='object'&&value?Boolean(value.outdoor):false;
     return <article className="challenge-task">
       <label className="challenge-task-copy"><strong>{task.label}</strong><span>Target: {task.target} {task.unit}</span></label>
-      <div className="challenge-duration"><input type="number" min="0" step="1" inputMode="numeric" aria-label={`${task.label} duration in minutes`} value={minutes} onChange={event=>onChange({minutes:Number(event.target.value)||0,outdoor})}/><span>min</span></div>
-      <label className="challenge-outdoor"><input type="checkbox" checked={outdoor} onChange={event=>onChange({minutes:Number(minutes)||0,outdoor:event.target.checked})}/>{task.outdoorRequired?'Outdoors required':'Outdoors'}</label>
+      <div className="challenge-duration"><input type="number" min="0" step="1" inputMode="numeric" aria-label={`${task.label} duration in minutes`} value={minutes} onChange={event=>onChange({minutes:Number(event.target.value)||0,outdoor,workoutType:value?.workoutType})}/><span>min</span></div>
+      {task.requiresWorkoutType&&<label className="challenge-workout-type">Workout type
+        <select aria-label="Workout type" value={value?.workoutType||''} onChange={event=>onChange({minutes:Number(minutes)||0,outdoor,workoutType:event.target.value})}>
+          <option value="">Select a workout</option>
+          {task.workoutTypes.map(type=><option key={type} value={type}>{type}</option>)}
+        </select>
+      </label>}
+      <label className="challenge-outdoor"><input type="checkbox" checked={outdoor} onChange={event=>onChange({minutes:Number(minutes)||0,outdoor:event.target.checked,workoutType:value?.workoutType})}/>{task.outdoorRequired?'Outdoors required':'Outdoors'}</label>
     </article>;
   }
   const amount=Number(value)||0;

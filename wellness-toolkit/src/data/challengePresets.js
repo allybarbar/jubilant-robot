@@ -1,7 +1,9 @@
 export const TASK_CATALOG=[
   {id:'workout-1',label:'Workout 1',type:'duration',target:45,unit:'min',enabled:true,outdoorRequired:false},
   {id:'workout-2',label:'Workout 2',type:'duration',target:45,unit:'min',enabled:true,outdoorRequired:true},
-  {id:'workout',label:'Workout',type:'duration',target:45,unit:'min',enabled:true,outdoorRequired:false},
+  {id:'workout',label:'Workout',type:'duration',target:45,unit:'min',enabled:true,outdoorRequired:false,requiresWorkoutType:true,workoutTypes:['Yoga','Walking','Running','Gym / strength','Cycling','Swimming','HIIT','Sports','Other']},
+  {id:'breathing',label:'Daily breathing exercises',type:'checkbox',target:1,unit:'check',enabled:true},
+  {id:'journal',label:'Complete a journal entry',type:'checkbox',target:1,unit:'check',enabled:true},
   {id:'water',label:'Drink water',type:'counter',target:3800,unit:'ml',enabled:true},
   {id:'reading',label:'Read non-fiction',type:'counter',target:10,unit:'pages',enabled:true},
   {id:'diet',label:'Follow strict diet',type:'checkbox',target:1,unit:'check',enabled:true},
@@ -16,7 +18,10 @@ export const PRESETS={
   },
   soft:{
     id:'soft',label:'75 Soft',resetOnMiss:false,
-    tasks:['workout','water','reading'].map((id,index)=>({...TASK_CATALOG.find(task=>task.id===id),target:index===1?3000: index===2?10:45}))
+    tasks:['workout','water','reading','breathing','journal','photo'].map(id=>{
+      const task=TASK_CATALOG.find(item=>item.id===id);
+      return {...task,...(id==='water'?{target:3000}:{})};
+    })
   }
 };
 

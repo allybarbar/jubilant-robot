@@ -27,8 +27,25 @@ test('counter tasks must reach their configured target',()=>{
   assert.equal(isTaskComplete(task,3800),true);
 });
 
-test('requires a photo reference when the photo task is enabled',()=>{
-  const task=PRESETS.hard.tasks.find(item=>item.id==='photo');
+test('75 Soft includes breathing exercises and journal checks',()=>{
+  const breathing=PRESETS.soft.tasks.find(task=>task.id==='breathing');
+  const journal=PRESETS.soft.tasks.find(task=>task.id==='journal');
+  assert.equal(isTaskComplete(breathing,false),false);
+  assert.equal(isTaskComplete(breathing,true),true);
+  assert.equal(isTaskComplete(journal,false),false);
+  assert.equal(isTaskComplete(journal,true),true);
+});
+
+test('a Soft workout needs its duration and a selected workout type',()=>{
+  const workout=PRESETS.soft.tasks.find(task=>task.id==='workout');
+  assert.equal(isTaskComplete(workout,{minutes:45}),false);
+  assert.equal(isTaskComplete(workout,{minutes:45,workoutType:'Yoga'}),true);
+  assert.equal(isTaskComplete(workout,{minutes:45,workoutType:'Made up'}),false);
+});
+
+test('75 Soft requires a progress photo',()=>{
+  const task=PRESETS.soft.tasks.find(item=>item.id==='photo');
+  assert.equal(task.requiresPhoto,true);
   assert.equal(isTaskComplete(task,true),false);
   assert.equal(isTaskComplete(task,true,'photo-1'),true);
 });
