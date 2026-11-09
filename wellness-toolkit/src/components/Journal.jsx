@@ -11,9 +11,9 @@ export default function Journal(){
   const [log,setLog]=useState(()=>PREF('bw_j_log',[]));
   const [draft,setDraft]=useState(()=>{
     const d=PREF('bw_j_draft',null);
-    if(d&&d.day===dayKey())return d;
+    if(d&&d.day===dayKey())return {...d,nutrition:Boolean(d.nutrition),emptyStomach:Boolean(d.emptyStomach)};
     const e=PREF('bw_j_log',[]).find(x=>x.day===dayKey());
-    return e?{day:e.day,a:e.a,g:e.g,h:e.h}:{day:dayKey(),a:'',g:'',h:''};
+    return e?{day:e.day,a:e.a,g:e.g,h:e.h,nutrition:Boolean(e.nutrition),emptyStomach:Boolean(e.emptyStomach)}:{day:dayKey(),a:'',g:'',h:'',nutrition:false,emptyStomach:false};
   });
   const [open,setOpen]=useState(null);
   const [sure,setSure]=useState(null);
@@ -21,11 +21,10 @@ export default function Journal(){
   useEffect(()=>{SAVE('bw_j_draft',draft)},[draft]);
   useEffect(()=>{SAVE('bw_j_log',log)},[log]);
   const set=k=>e=>{setSaved(false);setDraft({...draft,[k]:e.target.value})};
+  const setCheck=k=>e=>{setSaved(false);setDraft({...draft,[k]:e.target.checked})};
   const has=log.some(e=>e.day===today);
-  const empty=!(draft.a.trim()||draft.g.trim()||draft.h.trim());
   const save=()=>{
-    if(empty)return;
-    const e={day:today,d:Date.now(),a:draft.a.trim(),g:draft.g.trim(),h:draft.h.trim()};
+    const e={day:today,d:Date.now(),a:draft.a.trim(),g:draft.g.trim(),h:draft.h.trim(),nutrition:Boolean(draft.nutrition),emptyStomach:Boolean(draft.emptyStomach)};
     setLog([e,...log.filter(x=>x.day!==today)].sort((x,y)=>x.day<y.day?1:-1));
     setSaved(true);
   };
@@ -39,7 +38,11 @@ export default function Journal(){
         <p style={{textAlign:'right'}}>{draft[k].length}/300</p>
       </div>
     ))}
-    <div className="row"><button onClick={save} disabled={empty} style={{opacity:empty?0.5:1}}>{has?'Update today':'Save entry'}</button></div>
+    <div className="card journal-checklist">
+      <label className="journal-check"><input type="checkbox" checked={Boolean(draft.nutrition)} onChange={setCheck('nutrition')}/><span><b>Am I happy with my nutrition today?</b><small>Check this if yes.</small></span></label>
+      <label className="journal-check"><input type="checkbox" checked={Boolean(draft.emptyStomach)} onChange={setCheck('emptyStomach')}/><span><b>Am I going to bed with an empty stomach?</b><small>Check this if yes.</small></span></label>
+    </div>
+    <div className="row"><button onClick={save}>{has?'Update today':'Save entry'}</button></div>
     {saved&&<p style={{textAlign:'center'}}>Saved. See you tomorrow.</p>}
     <p className="warn">Entries are stored only in this browser on this device.</p>
     <div className="card">
@@ -49,6 +52,8 @@ export default function Journal(){
           <button className="hrow" onClick={()=>setOpen(open===e.day?null:e.day)}><span>{dayLabel(e.day)}</span><b>{open===e.day?'Hide':'View'}</b></button>
           {open===e.day?(<div style={{display:'flex',flexDirection:'column',gap:8,paddingBottom:10}}>
             {JQ.map(([k,q])=>e[k]?(<div key={k}><p><b style={{color:'var(--ink)'}}>{q}</b></p><p style={{color:'var(--ink)'}}>{e[k]}</p></div>):null)}
+            {typeof e.nutrition==='boolean'&&<div><p><b style={{color:'var(--ink)'}}>Happy with my nutrition today</b></p><p style={{color:'var(--ink)'}}>{e.nutrition?'Yes':'No'}</p></div>}
+            {typeof e.emptyStomach==='boolean'&&<div><p><b style={{color:'var(--ink)'}}>Going to bed with an empty stomach</b></p><p style={{color:'var(--ink)'}}>{e.emptyStomach?'Yes':'No'}</p></div>}
             {sure===e.day?<button className="ghost" style={{padding:'6px 14px',alignSelf:'flex-start'}} onClick={()=>{setLog(log.filter(x=>x.day!==e.day));setSure(null);setOpen(null)}}>Tap again to delete</button>:<button className="ghost" style={{padding:'6px 14px',alignSelf:'flex-start'}} onClick={()=>setSure(e.day)}>Delete</button>}
           </div>):null}
         </div>

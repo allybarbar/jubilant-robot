@@ -50,6 +50,13 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 .insights-private input{margin:3px 0 0;accent-color:var(--orb)}
 .insights-summary p{white-space:pre-wrap;color:var(--ink)}
 .insights-error{color:#a63131}
+.journal-checklist{gap:0}
+.journal-check{display:flex;align-items:center;gap:12px;min-height:54px;padding:8px 0;cursor:pointer}
+.journal-check+.journal-check{border-top:1px solid var(--line)}
+.journal-check input{width:22px;height:22px;flex:0 0 22px;accent-color:var(--orb)}
+.journal-check span{display:flex;flex-direction:column;gap:3px}
+.journal-check b{font-size:14px}
+.journal-check small{font-size:12px;color:var(--mute)}
 .bar .indeterminate{width:35%;animation:insights-progress 1.4s ease-in-out infinite alternate}
 @keyframes insights-progress{from{transform:translateX(0)}to{transform:translateX(185%)}}
 @media (prefers-reduced-motion:reduce){.orb,.tab-content{transition:none}.orb{animation:none}}
