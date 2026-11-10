@@ -22,46 +22,52 @@ const recent=(entries,cutoff,today)=>entries
 
 const roundedSeconds=value=>Number.isFinite(Number(value))?Math.round(Number(value)):0;
 
-export function collectInsightsData(includePrivate){
+export function collectInsightsData(screen,includePrivate=false){
   const cutoff=new Date(Date.now()-30*24*60*60*1000).toISOString().slice(0,10);
   const today=new Date().toISOString().slice(0,10);
-  const breathing=recent(readLog('bw_hist'),cutoff,today).slice(0,30).map(entry=>({
-    date:dateOf(entry),
-    holdSeconds:Array.isArray(entry.t)?entry.t.map(roundedSeconds):[]
-  }));
-  const cold=recent(readLog('bw_cold_log'),cutoff,today).slice(0,30).map(entry=>({
-    date:dateOf(entry),
-    durationSeconds:roundedSeconds(entry.s)
-  }));
-  const hiit=recent(readLog('bw_hiit_log'),cutoff,today).slice(0,30).map(entry=>({
-    date:dateOf(entry),
-    rounds:roundedSeconds(entry.n),
-    workSeconds:roundedSeconds(entry.w),
-    restSeconds:roundedSeconds(entry.r)
-  }));
-  const yoga=recent(readLog('bw_yoga_log'),cutoff,today).slice(0,30).map(entry=>({
-    date:dateOf(entry),
-    durationSeconds:roundedSeconds(entry.s),
-    completed:!!entry.full
-  }));
-  const weights=recent(readLog('bw_w_log'),cutoff,today).slice(0,30).map(entry=>({
-    date:dateOf(entry),
-    workoutType:entry.type,
-    unit:entry.u,
-    exercises:Array.isArray(entry.ex)?entry.ex.map(ex=>({
-      name:ex.n,
-      sets:Array.isArray(ex.sets)?ex.sets.map(set=>({weight:set.w,reps:set.r})):[]
-    })):[]
-  }));
-  const data={period:'Last 30 days',periodStart:cutoff,breathing,cold,hiit,yoga,weights};
+  const data={period:'Last 30 days',periodStart:cutoff};
 
-  if(includePrivate){
+  if(screen==='breath'){
+    data.breathing=recent(readLog('bw_hist'),cutoff,today).slice(0,30).map(entry=>({
+      date:dateOf(entry),
+      holdSeconds:Array.isArray(entry.t)?entry.t.map(roundedSeconds):[]
+    }));
+  }else if(screen==='cold'){
+    data.cold=recent(readLog('bw_cold_log'),cutoff,today).slice(0,30).map(entry=>({
+      date:dateOf(entry),
+      durationSeconds:roundedSeconds(entry.s)
+    }));
+  }else if(screen==='hiit'){
+    data.hiit=recent(readLog('bw_hiit_log'),cutoff,today).slice(0,30).map(entry=>({
+      date:dateOf(entry),
+      rounds:roundedSeconds(entry.n),
+      workSeconds:roundedSeconds(entry.w),
+      restSeconds:roundedSeconds(entry.r)
+    }));
+  }else if(screen==='yoga'){
+    data.yoga=recent(readLog('bw_yoga_log'),cutoff,today).slice(0,30).map(entry=>({
+      date:dateOf(entry),
+      durationSeconds:roundedSeconds(entry.s),
+      completed:!!entry.full
+    }));
+  }else if(screen==='weights'){
+    data.weights=recent(readLog('bw_w_log'),cutoff,today).slice(0,30).map(entry=>({
+      date:dateOf(entry),
+      workoutType:entry.type,
+      unit:entry.u,
+      exercises:Array.isArray(entry.ex)?entry.ex.map(ex=>({
+        name:ex.n,
+        sets:Array.isArray(ex.sets)?ex.sets.map(set=>({weight:set.w,reps:set.r})):[]
+      })):[]
+    }));
+  }else if(screen==='journal'&&includePrivate){
     data.journal=recent(readLog('bw_j_log'),cutoff,today).slice(0,10).map(entry=>({
       date:dateOf(entry),
       achievement:entry.a,
       gratitude:entry.g,
       hopes:entry.h
     }));
+  }else if(screen==='body'&&includePrivate){
     data.bodyStats=recent(readLog('bw_body_log'),cutoff,today).slice(0,10).map(entry=>({
       date:dateOf(entry),
       weight:numericValue(entry.weight)??undefined,
@@ -72,10 +78,33 @@ export function collectInsightsData(includePrivate){
       systolic:numericValue(entry.systolic)??undefined,
       diastolic:numericValue(entry.diastolic)??undefined
     }));
-  }
-
-  for(const key of Object.keys(data)){
-    if(Array.isArray(data[key])&&!data[key].length)delete data[key];
+  }else if(screen==='challenge'){
+    let state;
+    try{
+      state=JSON.parse(localStorage.getItem('bw_challenge_v1')||'{}');
+    }catch{
+      state={};
+    }
+    const attempts=Array.isArray(state?.attempts)?state.attempts:[];
+    const attemptsById=new Map(attempts.map(attempt=>[attempt.id,attempt]));
+    const days=Array.isArray(state?.days)?state.days:[];
+    const recentDays=days.filter(entry=>{
+      const date=typeof entry.date==='string'?entry.date:dateOf(entry);
+      return date&&date>=cutoff&&date<=today&&attemptsById.has(entry.attemptId);
+    });
+    const relevantAttemptIds=new Set(recentDays.map(entry=>entry.attemptId));
+    data.challenge={
+      attempts:attempts.filter(attempt=>
+        (attempt.startDate>=cutoff&&attempt.startDate<=today)||relevantAttemptIds.has(attempt.id)
+      ).map(attempt=>({
+        startDate:attempt.startDate,
+        status:attempt.status
+      })),
+      days:recentDays.slice(-75).map(entry=>({
+        date:typeof entry.date==='string'?entry.date:dateOf(entry),
+        completed:!!entry.completed
+      }))
+    };
   }
 
   return data;
@@ -83,7 +112,8 @@ export function collectInsightsData(includePrivate){
 
 export function hasInsightsData(data){
   return ['breathing','cold','hiit','yoga','weights','journal','bodyStats']
-    .some(key=>Array.isArray(data[key])&&data[key].length>0);
+    .some(key=>Array.isArray(data[key])&&data[key].length>0)
+    ||Boolean(data.challenge?.days?.length);
 }
 
 const numericValue=value=>{
@@ -154,6 +184,7 @@ const measurementTrend=(entries,key,unitKey,fallbackUnit='')=>{
 export function summarizeInsightsData(data){
   const allEntries=['breathing','cold','hiit','yoga','weights','journal','bodyStats']
     .flatMap(key=>data[key]||[]);
+  allEntries.push(...(data.challenge?.days||[]));
   const periodStart=data.periodStart||allEntries
     .map(entry=>entry.date)
     .filter(Boolean)
@@ -243,7 +274,12 @@ export function summarizeInsightsData(data){
   });
 
   if(data.journal?.length){
-    addScreen('Journal',data.journal,{});
+    addScreen('Journal',data.journal,{
+      entries:data.journal.length,
+      journalEntries:data.journal.map(({date,achievement,gratitude,hopes})=>({
+        date,achievement,gratitude,hopes
+      }))
+    });
   }
 
   const bodyStats=data.bodyStats||[];
@@ -260,6 +296,17 @@ export function summarizeInsightsData(data){
       if(measurements[key]===undefined)delete measurements[key];
     }
     addScreen('Body stats',bodyStats,{measurements});
+  }
+
+  const challenge=data.challenge;
+  if(challenge?.days?.length){
+    const completedDays=challenge.days.filter(day=>day.completed).length;
+    addScreen('The 75',challenge.days,{
+      recordedDays:challenge.days.length,
+      completedDays,
+      completionRate:rounded(completedDays/challenge.days.length*100),
+      attempts:challenge.attempts.length
+    });
   }
 
   return {period:data.period,screens};

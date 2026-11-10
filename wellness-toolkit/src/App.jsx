@@ -10,7 +10,7 @@ import BodyStats from './components/BodyStats.jsx';
 import Insights from './components/Insights.jsx';
 import The75 from './components/The75.jsx';
 
-const TABS=[['breath','Breathing'],['cold','Cold shower'],['hiit','HIIT'],['weights','Weights'],['yoga','Yoga'],['journal','Journal'],['body','Body stats'],['insights','AI insights'],['challenge','The 75']];
+const TABS=[['breath','Breathing'],['cold','Cold shower'],['hiit','HIIT'],['weights','Weights'],['yoga','Yoga'],['journal','Journal'],['body','Body stats'],['challenge','The 75']];
 const INTRO={
   breath:'Power breaths, an exhale hold, then a recovery breath.',
   cold:'Time your cold shower, with a short countdown to get in.',
@@ -19,12 +19,14 @@ const INTRO={
   yoga:'A guided 30 minute session: warm-up, poses and relaxation.',
   journal:'Three short questions to close out your day.',
   body:'Record your weight, height, waist and blood pressure.',
-  insights:'Private, on-device insights based on your recent activity data.',
   challenge:'A configurable 75-day challenge with daily tasks and progress history.'
 };
 
 export default function App(){
-  const [mode,setMode]=useState(()=>PREF('bw_mode','breath'));
+  const [mode,setMode]=useState(()=>{
+    const preferred=PREF('bw_mode','breath');
+    return TABS.some(([key])=>key===preferred)?preferred:'breath';
+  });
   const [busy,setBusy]=useState(false);
   const [fadingOut,setFadingOut]=useState(false);
   const modeRef=useRef(mode);
@@ -63,8 +65,8 @@ export default function App(){
         {mode==='yoga'&&<Yoga onBusy={setBusy}/>}
         {mode==='journal'&&<Journal/>}
         {mode==='body'&&<BodyStats/>}
-        {mode==='insights'&&<Insights/>}
         {mode==='challenge'&&<The75/>}
+        <Insights key={mode} screen={mode}/>
       </div>
     </div>
   );

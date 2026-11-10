@@ -42,6 +42,8 @@ const naturalFallback=screen=>{
     facts.push(`${screen.loggedSets} sets were logged.`);
   }else if(screen.measurements){
     facts.push(`${screen.measurements.entries} measurement entries were recorded.`);
+  }else if(screen.recordedDays!==undefined){
+    facts.push(`${screen.completedDays} of ${screen.recordedDays} recorded challenge days were completed (${screen.completionRate}%).`);
   }
   return facts.slice(0,2).map(fact=>`- ${fact}`).join('\n');
 };
