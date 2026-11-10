@@ -44,7 +44,8 @@ export default function Insights({screen}){
         }else if(progress.status==='generating'){
           const section=progress.screen?` ${progress.screen} insights`: ' your summary';
           const count=progress.current&&progress.total?` (${progress.current} of ${progress.total})`:'';
-          setStatus(`Generating${section}${count} on this device…`);
+          const runtime=progress.device==='webgpu'?'with GPU acceleration':'with CPU/WebAssembly';
+          setStatus(`Generating${section}${count} on this device ${runtime}…`);
         }
       });
       setSummary(result);

@@ -1,5 +1,6 @@
 const MODEL_ID='onnx-community/SmolLM2-360M-Instruct-ONNX';
 let generatorPromise;
+let activeDevice='wasm';
 let generationQueue=Promise.resolve();
 
 const naturalFallback=screen=>{
@@ -57,12 +58,33 @@ const naturalize=text=>{
 async function getGenerator(id){
   if(!generatorPromise){
     generatorPromise=(async()=>{
-      const {pipeline}=await import('@huggingface/transformers');
-      return pipeline('text-generation',MODEL_ID,{
-        device:'wasm',
-        dtype:'q4',
-        progress_callback:progress=>self.postMessage({id,type:'progress',progress})
-      });
+      const {pipeline,env}=await import('@huggingface/transformers');
+      const createGenerator=device=>pipeline('text-generation',MODEL_ID,{
+          device,
+          dtype:'q4',
+          progress_callback:progress=>self.postMessage({id,type:'progress',progress})
+        });
+
+      if(env.backends.onnx.getSupportedDevices().includes('webgpu')){
+        try{
+          const generator=await createGenerator('webgpu');
+          activeDevice='webgpu';
+          return generator;
+        }catch(webgpuError){
+          activeDevice='wasm';
+          try{
+            return await createGenerator('wasm');
+          }catch(wasmError){
+            throw new Error(
+              `WebGPU initialization failed (${webgpuError instanceof Error?webgpuError.message:String(webgpuError)}); `+
+              `WebAssembly fallback failed (${wasmError instanceof Error?wasmError.message:String(wasmError)}).`
+            );
+          }
+        }
+      }
+
+      activeDevice='wasm';
+      return createGenerator('wasm');
     })();
   }
 
@@ -84,7 +106,7 @@ async function generate({id,summary}){
       self.postMessage({
         id,
         type:'progress',
-        progress:{status:'generating',screen:screen.screen,current:index+1,total:screens.length}
+        progress:{status:'generating',screen:screen.screen,current:index+1,total:screens.length,device:activeDevice}
       });
       const result=await generator([
         {
@@ -96,7 +118,7 @@ async function generate({id,summary}){
           content:`Summarize this screen only. The data includes only screens with entries. Use early/late comparisons only when shown; do not calculate from other fields. For body measurements, report changes neutrally and do not call a direction better or worse. Do not repeat the data as a list of fields.\n\nScreen data: ${JSON.stringify(screen)}`
         }
       ],{
-        max_new_tokens:80,
+        max_new_tokens:48,
         do_sample:false
       });
       const generated=result?.[0]?.generated_text;
