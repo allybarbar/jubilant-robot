@@ -7,7 +7,6 @@ import Weights from './components/Weights.jsx';
 import Yoga from './components/Yoga.jsx';
 import Journal from './components/Journal.jsx';
 import BodyStats from './components/BodyStats.jsx';
-import Insights from './components/Insights.jsx';
 import The75 from './components/The75.jsx';
 
 const TABS=[['breath','Breathing'],['cold','Cold shower'],['hiit','HIIT'],['weights','Weights'],['yoga','Yoga'],['journal','Journal'],['body','Body stats'],['challenge','The 75']];
@@ -66,7 +65,6 @@ export default function App(){
         {mode==='journal'&&<Journal/>}
         {mode==='body'&&<BodyStats/>}
         {mode==='challenge'&&<The75/>}
-        <Insights key={mode} screen={mode}/>
       </div>
     </div>
   );

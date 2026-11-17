@@ -1,8 +1,6 @@
 # Wellness Toolkit
 
-A single-page React app with wellness timers and trackers, a daily journal, body stats, and page-specific AI insights. Voice guidance and ocean waves use the browser's built-in speech and Web Audio. Settings and logs are saved in `localStorage` (per browser, per device).
-
-AI insights run entirely in the browser using a quantized open model and use only the selected section's recent data. WebGPU is used when available, with WebAssembly as a fallback. Insights are available below each section, highlighting activity frequency and available early-to-late changes. Journal answers and body measurements are excluded unless the user opts in from their respective sections. The first insight downloads model files from Hugging Face (several hundred MB); the browser can cache them for later use. No user logs are sent to a server.
+A single-page React app with wellness timers and trackers, a daily journal, and body stats. Voice guidance and ocean waves use the browser's built-in speech and Web Audio. Settings and logs are saved in `localStorage` (per browser, per device).
 
 Breath-hold practice is not safe in or near water, while driving or standing. Check with a doctor first if you have a heart condition, epilepsy, high blood pressure or are pregnant.
 
@@ -22,7 +20,7 @@ npm run build    # outputs to dist/
 
 ## Static hosting
 
-Run `npm run build` before uploading `dist/` to a static host, such as Netlify Drop or Cloudflare Pages. The generated app includes the browser AI runtime and WebAssembly engine; the language model itself downloads from Hugging Face when the user first generates a summary.
+Run `npm run build` before uploading `dist/` to a static host, such as Netlify Drop or Cloudflare Pages.
 
 ## Embedding in Squarespace
 
@@ -37,7 +35,7 @@ Host `dist/` somewhere, then add a Code block (HTML mode, Display Source off):
 ```
 src/
   App.jsx               tab shell
-  components/           Breathing, Cold, Hiit, Stick, Weights, Yoga, Journal, BodyStats, Insights
+  components/           Breathing, Cold, Hiit, Stick, Weights, Yoga, Journal, BodyStats
   data/                 exercises, stick-figure animations, weight splits, yoga poses
   lib/                  audio (waves + speech), storage helpers
   styles.css
